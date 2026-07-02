@@ -1,0 +1,81 @@
+name: Build usbobliter8
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    name: Build ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            file_name: "usbobliter8"
+            name: "Windows"
+          - os: ubuntu-latest
+            file_name: "usbobliter8"
+            name: "Linux"
+          - os: macos-latest
+            file_name: "usbobliter8"
+            name: "macOS ARM"
+          - os: macos-15-intel
+            file_name: "usbobliter8"
+            name: "macOS Intel"
+
+    steps:
+    - uses: actions/checkout@v6
+
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: '3.11'
+
+    - name: Install Dependencies
+      run: pip install PyQt5 pymobiledevice3==7.8.3 pyusb pyinstaller
+
+    - name: Install libusb (macOS)
+      if: runner.os == 'macOS'
+      run: brew install libusb
+
+    - name: Install libusb (Linux)
+      if: runner.os == 'Linux'
+      run: sudo apt-get update && sudo apt-get install -y libusb-1.0-0-dev libudev-dev
+
+    - name: Install DMG Creator
+      if: runner.os == 'macOS'
+      run: brew install create-dmg
+
+    - name: Build with PyInstaller
+      env:
+        MACOSX_DEPLOYMENT_TARGET: "10.13"
+      shell: bash
+      run: |
+        SEP=":"
+        if [ "$RUNNER_OS" = "Windows" ]; then SEP=";"; fi
+        pyinstaller --noconfirm --onefile --windowed \
+          --name "${{ matrix.file_name }}" \
+          --add-data "boot${SEP}boot" \
+          --hidden-import "pymobiledevice3" \
+          main.py
+
+    - name: Package macOS DMG
+      if: runner.os == 'macOS'
+      run: |
+        cd dist
+        plutil -replace LSMinimumSystemVersion -string "10.13" "${{ matrix.file_name }}.app/Contents/Info.plist"
+        codesign --force --deep --sign - "${{ matrix.file_name }}.app"
+        create-dmg --volname "usbobliter8" --window-pos 200 120 --window-size 600 300 --icon-size 100 --text-size 12 --hide-extension "${{ matrix.file_name }}.app" --app-drop-link 450 140 --icon "${{ matrix.file_name }}.app" 150 140 "${{ matrix.file_name }}.dmg" "${{ matrix.file_name }}.app"
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v6
+      with:
+        name: ${{ matrix.name }}
+        path: |
+          dist/*.dmg
+          dist/*.exe
+          dist/usbobliter8
