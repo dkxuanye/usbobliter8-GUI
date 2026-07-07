@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<dict>
+		<key>cpid</key><string>0x8020</string>
+		<key>bdid</key><integer>10</integer>
+		<key>name</key><string>iPhone XS Max</string>
+		<key>ibecCodename</key><string>d331</string>
+	</dict>
+	<dict>
+		<key>cpid</key><string>0x8020</string>
+		<key>bdid</key><integer>12</integer>
+		<key>name</key><string>iPhone XR</string>
+		<key>ibecCodename</key><string>n841</string>
+	</dict>
+	<dict>
+		<key>cpid</key><string>0x8020</string>
+		<key>bdid</key><integer>14</integer>
+		<key>name</key><string>iPhone XS</string>
+		<key>ibecCodename</key><string>d321</string>
+	</dict>
+	<dict>
+		<key>cpid</key><string>0x8020</string>
+		<key>bdid</key><integer>26</integer>
+		<key>name</key><string>iPhone XS Max</string>
+		<key>ibecCodename</key><string>d331p</string>
+	</dict>
+	<dict>
+		<key>cpid</key><string>0x8020</string>
+		<key>bdid</key><integer>20</integer>
+		<key>name</key><string>iPad mini 5</string>
+		<key>ibecCodename</key><string>j210</string>
+	</dict>
+	<dict>
+		<key>cpid</key><string>0x8020</string>
+		<key>bdid</key><integer>22</integer>
+		<key>name</key><string>iPad mini 5</string>
+		<key>ibecCodename</key><string>j210</string>
+	</dict>
+	<dict>
+		<key>cpid</key><string>0x8020</string>
+		<key>bdid</key><integer>28</integer>
+		<key>name</key><string>iPad Air 3</string>
+		<key>ibecCodename</key><string>j217</string>
+	</dict>
+	<dict>
+		<key>cpid</key><string>0x8020</string>
+		<key>bdid</key><integer>30</integer>
+		<key>name</key><string>iPad Air 3</string>
+		<key>ibecCodename</key><string>j217</string>
+	</dict>
+	<dict>
+		<key>cpid</key><string>0x8020</string>
+		<key>bdid</key><integer>36</integer>
+		<key>name</key><string>iPad (8th gen)</string>
+		<key>ibecCodename</key><string>ipad11b</string>
+	</dict>
+	<dict>
+		<key>cpid</key><string>0x8020</string>
+		<key>bdid</key><integer>38</integer>
+		<key>name</key><string>iPad (8th gen)</string>
+		<key>ibecCodename</key><string>ipad11b</string>
+	</dict>
+	<dict>
+		<key>cpid</key><string>0x8030</string>
+		<key>bdid</key><integer>2</integer>
+		<key>name</key><string>iPhone 11 Pro Max</string>
+		<key>ibecCodename</key><string>d431</string>
+	</dict>
+	<dict>
+		<key>cpid</key><string>0x8030</string>
+		<key>bdid</key><integer>4</integer>
+		<key>name</key><string>iPhone 11</string>
+		<key>ibecCodename</key><string>n104</string>
+	</dict>
+	<dict>
+		<key>cpid</key><string>0x8030</string>
+		<key>bdid</key><integer>6</integer>
+		<key>name</key><string>iPhone 11 Pro</string>
+		<key>ibecCodename</key><string>d421</string>
+	</dict>
+	<dict>
+		<key>cpid</key><string>0x8030</string>
+		<key>bdid</key><integer>16</integer>
+		<key>name</key><string>iPhone SE (2nd gen)</string>
+		<key>ibecCodename</key><string>d79</string>
+	</dict>
+</array>
+</plist>
