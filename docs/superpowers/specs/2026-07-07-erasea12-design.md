@@ -34,7 +34,7 @@ Python/依赖，同时具备现代化的 macOS 26 风格外观。
 | 决策点 | 选择 | 理由 |
 |---|---|---|
 | UI 框架 | Swift + AppKit | SwiftUI 在 10.15 上关键 API 缺失（`@StateObject`、`LazyVStack` 等需 11+），AppKit 原生支持 10.15+ 全部所需控件 |
-| USB/DFU 通信 | 链接现有已编译的 `libimobiledevice`（`libirecovery`）C 库 | 用户已有成熟编译产物，通过 Swift bridging header 直接调用，避免重新实现 DFU/USB 协议 |
+| USB/DFU 通信 | 从源码重新编译 `libirecovery` 及其依赖（`libimobiledevice-glue`、`libplist`、`libusb`），静态库 vendor 进项目仓库 | 用户机器上已有的编译产物是 x86_64-only、`minos 13.0`，与"10.15+ universal"的硬性要求冲突（见下方"依赖构建策略"）。用同样的库、自己按正确参数编译，避免重新实现 DFU/USB 协议 |
 | 设备发现 | IOKit (`IOServiceAddMatchingNotification`) 监听 Apple DFU 设备（VID `0x05AC`, PID `0x1227`）插入/移除 | 系统原生 API，无需 polling 之外的额外依赖 |
 | PWND 检测 | 通过 libirecovery 读取设备 USB serial string，检查 `PWND:[` 标记（与现有 Python 逻辑一致） | 保持与验证过的现有逻辑等价 |
 | exploit 触发 | 不做 — 完全由用户手动用 `usbliter8` 完成，app 只负责检测状态 | 用户明确要求，降低风险和维护面 |
@@ -44,6 +44,26 @@ Python/依赖，同时具备现代化的 macOS 26 风格外观。
 | 分发格式 | `.dmg`，ad-hoc 签名（无付费证书） | 用户选择；README 说明如何在 Gatekeeper 下打开 |
 | 本地化 | `NSLocalizedString` + `.strings`，跟随系统语言（中/英） | 双语支持 |
 | 部署目标 | `MACOSX_DEPLOYMENT_TARGET = 10.15` | 覆盖要求范围 |
+
+## 依赖构建策略
+
+开发者机器上通过 Homebrew 已安装的 `libirecovery`（及其依赖 `libimobiledevice-glue`、
+`libplist`、`libusb`）经检查存在两个问题，与"10.15+ universal"的硬性要求冲突：
+
+- 只有 `x86_64` 单一架构切片，没有 `arm64`（Apple Silicon 上需要 Rosetta 2 转译，非原生运行）
+- Mach-O `LC_BUILD_VERSION` 记录的 `minos` 为 `13.0`，意味着即使 app 本身部署目标设为
+  10.15，链接这些库后在 10.15–12.x 系统上很可能无法启动
+
+因此不能直接使用现成的 Homebrew 编译产物，改为从源码重新编译：
+
+- 依次编译 `libplist` → `libusb` → `libimobiledevice-glue` → `libirecovery`（按依赖顺序）
+- 每个库编译两次（`arch -x86_64` / `arch -arm64`），用 `lipo` 合并成 universal 静态库
+  （`.a`），并显式设置 `MACOSX_DEPLOYMENT_TARGET=10.15` 及对应的 `-mmacosx-version-min=10.15`
+  编译/链接参数
+- 合并后的 universal 静态库（`.a`）vendor 进项目仓库（如 `Vendor/libirecovery/lib/`），app
+  构建时静态链接，不在最终产物里依赖任何系统外部 `.dylib`，也不要求用户单独安装
+- 这一步是一次性构建产出，产物提交进仓库后，日常开发/CI 构建 EraseA12 本身无需重新编译这些
+  依赖
 
 ## 架构
 
