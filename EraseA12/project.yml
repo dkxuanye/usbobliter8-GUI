@@ -1,0 +1,67 @@
+name: EraseA12
+options:
+  deploymentTarget:
+    macOS: "10.15"
+  xcodeVersion: "14.3"
+  generateEmptyDirectories: true
+settings:
+  base:
+    MACOSX_DEPLOYMENT_TARGET: "10.15"
+    SWIFT_VERSION: "5.0"
+    PRODUCT_BUNDLE_IDENTIFIER: "com.prdgmshift.erasea12"
+    CODE_SIGN_IDENTITY: "-"
+    CODE_SIGN_STYLE: Manual
+    ENABLE_HARDENED_RUNTIME: NO
+targets:
+  EraseA12:
+    type: application
+    platform: macOS
+    sources:
+      - path: EraseA12
+        excludes:
+          - "**/.DS_Store"
+    resources:
+      - path: EraseA12/Resources/boot
+      - path: EraseA12/Resources/Devices.plist
+      - path: EraseA12/Resources/en.lproj
+      - path: EraseA12/Resources/zh-Hans.lproj
+      - path: EraseA12/Resources/Assets.xcassets
+    settings:
+      base:
+        INFOPLIST_FILE: EraseA12/Resources/Info.plist
+        PRODUCT_NAME: EraseA12
+        HEADER_SEARCH_PATHS:
+          - "$(PROJECT_DIR)/Vendor/libirecovery/include"
+          - "$(PROJECT_DIR)/EraseA12/Bridge"
+        LIBRARY_SEARCH_PATHS: "$(PROJECT_DIR)/Vendor/libirecovery/lib"
+        OTHER_LDFLAGS:
+          - "-lirecovery-1.0"
+          - "-limobiledevice-glue-1.0"
+          - "-lplist-2.0"
+          - "-lusb-1.0"
+          - "-lssl"
+          - "-lcrypto"
+          - "-lz"
+          - "-framework"
+          - "IOKit"
+          - "-framework"
+          - "Foundation"
+          - "-framework"
+          - "AppKit"
+        SWIFT_OBJC_BRIDGING_HEADER: "EraseA12/Bridge/EraseA12-Bridging-Header.h"
+        ENABLE_APP_SANDBOX: NO
+    entitlements:
+      path: EraseA12/EraseA12.entitlements
+      properties:
+        com.apple.security.device.usb: true
+  EraseA12Tests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: EraseA12Tests
+    dependencies:
+      - target: EraseA12
+    settings:
+      base:
+        PRODUCT_NAME: EraseA12Tests
+        MACOSX_DEPLOYMENT_TARGET: "10.15"
