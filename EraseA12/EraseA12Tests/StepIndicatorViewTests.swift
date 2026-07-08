@@ -126,6 +126,56 @@ final class StepIndicatorViewTests: XCTestCase {
         XCTAssertNotNil(appMenu?.items.first { $0.title == "关于 EraseA12" })
     }
 
+    func testAppIconCatalogContainsEveryMacSlotAtTheCorrectPixelSize() throws {
+        let eraseA12Root = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+        let appIconDirectory = eraseA12Root
+            .appendingPathComponent("EraseA12/Resources/Assets.xcassets/AppIcon.appiconset")
+        let contentsURL = appIconDirectory.appendingPathComponent("Contents.json")
+        let contentsData = try Data(contentsOf: contentsURL)
+        let root = try XCTUnwrap(
+            JSONSerialization.jsonObject(with: contentsData) as? [String: Any]
+        )
+        let images = try XCTUnwrap(root["images"] as? [[String: String]])
+        let expectedSlots: Set<String> = [
+            "16x16-1x", "16x16-2x",
+            "32x32-1x", "32x32-2x",
+            "128x128-1x", "128x128-2x",
+            "256x256-1x", "256x256-2x",
+            "512x512-1x", "512x512-2x"
+        ]
+        let actualSlots = Set(images.compactMap { image -> String? in
+            guard let size = image["size"], let scale = image["scale"] else { return nil }
+            return "\(size)-\(scale)"
+        })
+
+        XCTAssertEqual(images.count, 10)
+        XCTAssertEqual(actualSlots, expectedSlots)
+
+        for image in images {
+            let filename = try XCTUnwrap(image["filename"])
+            let size = try XCTUnwrap(image["size"])
+            let scale = try XCTUnwrap(image["scale"])
+            XCTAssertEqual(image["idiom"], "mac")
+
+            let basePixels = try XCTUnwrap(Int(size.split(separator: "x")[0]))
+            let scaleMultiplier = try XCTUnwrap(Int(scale.dropLast()))
+            let expectedPixels = basePixels * scaleMultiplier
+            let data = try Data(contentsOf: appIconDirectory.appendingPathComponent(filename))
+            let bitmap = try XCTUnwrap(NSBitmapImageRep(data: data))
+
+            XCTAssertEqual(bitmap.pixelsWide, expectedPixels, filename)
+            XCTAssertEqual(bitmap.pixelsHigh, expectedPixels, filename)
+        }
+
+        let projectYAML = try String(
+            contentsOf: eraseA12Root.appendingPathComponent("project.yml"),
+            encoding: .utf8
+        )
+        XCTAssertTrue(projectYAML.contains("ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon"))
+    }
+
     func testMainWindowShowsAboutButtonInTopRightCorner() {
         let controller = MainWindowController()
         let contentView = controller.window!.contentView!

@@ -28,6 +28,7 @@ targets:
       - path: EraseA12/Resources/Assets.xcassets
     settings:
       base:
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         INFOPLIST_FILE: EraseA12/Resources/Info.plist
         PRODUCT_NAME: EraseA12
         HEADER_SEARCH_PATHS:
