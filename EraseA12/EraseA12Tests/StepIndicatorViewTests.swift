@@ -77,6 +77,55 @@ final class StepIndicatorViewTests: XCTestCase {
         XCTAssertTrue(texts.contains("未检测到 DFU 设备，请连接已进入 PWND DFU 模式的设备。"))
     }
 
+    func testAboutWindowShowsCopyrightAndDeveloperCredits() {
+        let information = AboutInformation(
+            appName: "EraseA12",
+            version: "1.2.3",
+            build: "45"
+        )
+        let controller = AboutWindowController(information: information)
+
+        let texts = Self.displayTexts(in: controller.window!.contentView!)
+        XCTAssertTrue(texts.contains("EraseA12"))
+        XCTAssertTrue(texts.contains("版本 1.2.3（45）"))
+        XCTAssertTrue(texts.contains("原项目作者：overcast302"))
+        XCTAssertTrue(texts.contains("由 玄烨品果开发"))
+        XCTAssertTrue(texts.contains("www.dkxuanye.cn"))
+        XCTAssertTrue(texts.contains("Copyright © 2026 overcast302"))
+        XCTAssertTrue(texts.contains("MIT License"))
+    }
+
+    func testAboutWindowUsesFixedHTTPSLinks() {
+        XCTAssertEqual(
+            AboutWindowController.originalProjectURL.absoluteString,
+            "https://github.com/overcast302/usbobliter8"
+        )
+        XCTAssertEqual(
+            AboutWindowController.developerWebsiteURL.absoluteString,
+            "https://www.dkxuanye.cn"
+        )
+    }
+
+    func testAboutInformationReadsBundleMetadata() {
+        let information = AboutInformation(infoDictionary: [
+            "CFBundleName": "TestErase",
+            "CFBundleShortVersionString": "2.3.4",
+            "CFBundleVersion": "56"
+        ])
+
+        XCTAssertEqual(information.appName, "TestErase")
+        XCTAssertEqual(information.version, "2.3.4")
+        XCTAssertEqual(information.build, "56")
+    }
+
+    func testApplicationMenuContainsAboutItem() {
+        let delegate = AppDelegate()
+        let menu = delegate.makeMainMenu()
+        let appMenu = menu.items.first?.submenu
+
+        XCTAssertNotNil(appMenu?.items.first { $0.title == "关于 EraseA12" })
+    }
+
     func testDefaultHeightKeepsStepTitlesInsideBounds() {
         let view = StepIndicatorView()
         let bounds = CGRect(origin: .zero, size: view.intrinsicContentSize)

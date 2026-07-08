@@ -15,15 +15,15 @@
 - Preserve `Copyright (c) 2026 overcast302` and the MIT License.
 - Display `由 玄烨品果开发` and link `www.dkxuanye.cn` to `https://www.dkxuanye.cn`.
 - Do not connect to a device or execute the destructive erase workflow.
-- Treat `EraseA12/project.yml` as the project source of truth and regenerate the ignored Xcode project after adding files.
+- Treat `EraseA12/project.yml` as the project source of truth; this change adds no source files, so the generated project needs no membership edit.
 
 ---
 
 ### Task 1: About window content and links
 
 **Files:**
-- Create: `EraseA12/EraseA12/UI/AboutWindowController.swift`
-- Create: `EraseA12/EraseA12Tests/AboutWindowControllerTests.swift`
+- Modify: `EraseA12/EraseA12/App/AppDelegate.swift`
+- Modify: `EraseA12/EraseA12Tests/StepIndicatorViewTests.swift`
 - Modify: `EraseA12/EraseA12/Resources/zh-Hans.lproj/Localizable.strings`
 - Modify: `EraseA12/EraseA12/Resources/en.lproj/Localizable.strings`
 
@@ -31,7 +31,7 @@
 - Produces: `AboutInformation.init(appName:version:build:)`, `AboutInformation.init(bundle:)`, and `AboutWindowController.init(information:)`.
 - Produces: `AboutWindowController.originalProjectURL` and `AboutWindowController.developerWebsiteURL` as fixed HTTPS URLs.
 
-- [ ] **Step 1: Write failing content and URL tests**
+- [x] **Step 1: Write failing content and URL tests**
 
 ```swift
 func testAboutWindowShowsCopyrightAndDeveloperCredits() {
@@ -56,20 +56,19 @@ func testAboutWindowUsesFixedHTTPSLinks() {
 }
 ```
 
-- [ ] **Step 2: Regenerate the project and verify the tests fail**
+- [x] **Step 2: Verify the tests fail**
 
 Run:
 
 ```bash
-xcodegen generate -s EraseA12/project.yml -o EraseA12/EraseA12.xcodeproj
 xcodebuild test -project EraseA12/EraseA12.xcodeproj -scheme EraseA12 \
   -configuration Debug -destination 'platform=macOS' \
-  -only-testing:EraseA12Tests/AboutWindowControllerTests
+  -only-testing:EraseA12Tests/StepIndicatorViewTests
 ```
 
 Expected: compilation fails because `AboutInformation` and `AboutWindowController` do not exist.
 
-- [ ] **Step 3: Add localized strings and minimal controller implementation**
+- [x] **Step 3: Add localized strings and minimal controller implementation**
 
 Add Simplified Chinese keys for the title, version format, original author, developer credit, website, copyright, and license. Add corresponding English reference keys to preserve string-table parity.
 
@@ -185,7 +184,7 @@ final class AboutWindowController: NSWindowController {
 }
 ```
 
-- [ ] **Step 4: Run focused tests and string-table lint**
+- [x] **Step 4: Run focused tests and string-table lint**
 
 Run the focused `xcodebuild test` command from Step 2 and:
 
@@ -199,13 +198,13 @@ Expected: focused tests pass and both string tables report `OK`.
 
 **Files:**
 - Modify: `EraseA12/EraseA12/App/AppDelegate.swift`
-- Modify: `EraseA12/EraseA12Tests/AboutWindowControllerTests.swift`
+- Modify: `EraseA12/EraseA12Tests/StepIndicatorViewTests.swift`
 
 **Interfaces:**
 - Consumes: `AboutWindowController.init(information:)` from Task 1.
 - Produces: `AppDelegate.makeMainMenu() -> NSMenu` and `AppDelegate.showAboutWindow(_:)`.
 
-- [ ] **Step 1: Write the failing application-menu test**
+- [x] **Step 1: Write the failing application-menu test**
 
 ```swift
 func testApplicationMenuContainsAboutItem() {
@@ -217,13 +216,13 @@ func testApplicationMenuContainsAboutItem() {
 }
 ```
 
-- [ ] **Step 2: Run the focused test and verify it fails**
+- [x] **Step 2: Run the focused test and verify it fails**
 
 Run the Task 1 focused `xcodebuild test` command.
 
 Expected: compilation fails because `makeMainMenu()` does not exist.
 
-- [ ] **Step 3: Add the menu and retained about controller**
+- [x] **Step 3: Add the menu and retained about controller**
 
 Implement in `AppDelegate`:
 
@@ -274,9 +273,9 @@ func makeMainMenu() -> NSMenu {
 }
 ```
 
-- [ ] **Step 4: Run focused tests**
+- [x] **Step 4: Run focused tests**
 
-Expected: all `AboutWindowControllerTests` pass.
+Expected: all `StepIndicatorViewTests` pass.
 
 ### Task 3: Full verification and durable handoff
 
@@ -291,7 +290,7 @@ Expected: all `AboutWindowControllerTests` pass.
 - Consumes: completed About window and menu integration.
 - Produces: verified Release app and updated project continuity records.
 
-- [ ] **Step 1: Run the full test suite**
+- [x] **Step 1: Run the full test suite**
 
 ```bash
 xcodebuild test -project EraseA12/EraseA12.xcodeproj -scheme EraseA12 \
@@ -300,7 +299,7 @@ xcodebuild test -project EraseA12/EraseA12.xcodeproj -scheme EraseA12 \
 
 Expected: all existing 26 tests plus the new About tests pass.
 
-- [ ] **Step 2: Build and inspect the Release app**
+- [x] **Step 2: Build and inspect the Release app**
 
 ```bash
 xcodebuild clean build -project EraseA12/EraseA12.xcodeproj -scheme EraseA12 \
@@ -314,11 +313,11 @@ git diff --check
 
 Expected: build and strict signature pass; the executable remains universal; the known Homebrew OpenSSL dependency is reported honestly.
 
-- [ ] **Step 3: Update handoff documents**
+- [x] **Step 3: Update handoff documents**
 
 Record the menu, about-window content, new test count, Release verification, unchanged OpenSSL limitation, and the fact that no device-side erase test ran. Mark the design status as implemented.
 
-- [ ] **Step 4: Review the final diff**
+- [x] **Step 4: Review the final diff**
 
 ```bash
 git diff --stat

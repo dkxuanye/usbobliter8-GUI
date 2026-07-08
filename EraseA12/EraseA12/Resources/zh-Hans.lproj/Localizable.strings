@@ -40,6 +40,17 @@
 "accessibility.success" = "成功";
 "accessibility.failure" = "失败";
 
+/* 关于窗口和应用菜单 */
+"about.menu_title" = "关于 EraseA12";
+"about.title" = "关于 EraseA12";
+"about.version_format" = "版本 %@（%@）";
+"about.original_author" = "原项目作者：overcast302";
+"about.developer" = "由 玄烨品果开发";
+"about.website" = "www.dkxuanye.cn";
+"about.copyright" = "Copyright © 2026 overcast302";
+"about.license" = "MIT License";
+"menu.quit" = "退出 EraseA12";
+
 /* 错误信息 */
 "error.no_device" = "未检测到 DFU 设备，请连接已进入 PWND DFU 模式的设备。";
 "error.not_pwnd" = "检测到设备但未处于 PWND 状态，请先使用 usbliter8。";

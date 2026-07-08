@@ -40,6 +40,17 @@
 "accessibility.success" = "Success";
 "accessibility.failure" = "Failure";
 
+/* About window and application menu */
+"about.menu_title" = "About EraseA12";
+"about.title" = "About EraseA12";
+"about.version_format" = "Version %@ (%@)";
+"about.original_author" = "Original project by overcast302";
+"about.developer" = "Developed by 玄烨品果";
+"about.website" = "www.dkxuanye.cn";
+"about.copyright" = "Copyright © 2026 overcast302";
+"about.license" = "MIT License";
+"menu.quit" = "Quit EraseA12";
+
 /* Errors */
 "error.no_device" = "No DFU device detected. Please connect a device in PWND DFU mode.";
 "error.not_pwnd" = "Device detected but not in PWND state. Please use usbliter8 first.";

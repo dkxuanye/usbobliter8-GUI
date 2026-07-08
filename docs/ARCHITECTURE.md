@@ -38,6 +38,8 @@ patched iBEC、设置擦除相关 NVRAM 并重启。
 - `ObliterationEngine`: 在后台串行队列执行不可逆擦除流程，并把状态回调到主线程。
 - `MainWindowController`: 管理 USB 监听、设备确认和四个步骤控制器之间的切换。
 - `L10n`: 固定加载 `zh-Hans.lproj`，确保应用不随系统语言切回英文。
+- `AppDelegate`: 创建标准应用菜单，持有主窗口和关于窗口控制器。
+- `AboutWindowController`: 展示 bundle 版本、原项目版权、MIT License、GUI 开发者署名和固定 HTTPS 链接。
 
 ## 启动方式
 
@@ -82,7 +84,8 @@ xcodebuild test \
   -destination 'platform=macOS'
 ```
 
-测试覆盖设备 serial 解析、iBEC 路径优先级、擦除状态机成功/失败分支以及中文 UI 布局。
+测试覆盖设备 serial 解析、iBEC 路径优先级、擦除状态机成功/失败分支、中文 UI 布局、关于窗口
+版权内容、链接和应用菜单入口。
 
 ## 配置文件说明
 
@@ -113,6 +116,9 @@ IOKit 检测 DFU 设备
      -> reboot
   -> 完成或失败页
 ```
+
+应用启动时，`AppDelegate` 同时创建 `EraseA12` 菜单；用户选择“关于 EraseA12”后打开独立信息
+窗口。关于窗口不访问设备，也不调用 `ObliterationEngine`。
 
 ## 注意事项
 
