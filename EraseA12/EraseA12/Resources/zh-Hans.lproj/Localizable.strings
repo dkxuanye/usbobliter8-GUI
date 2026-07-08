@@ -1,0 +1,43 @@
+/* 步骤标题 */
+"step.waiting" = "连接";
+"step.confirm" = "确认";
+"step.executing" = "擦除";
+"step.done" = "完成";
+
+/* 等待步骤 */
+"waiting.title" = "等待设备";
+"waiting.subtitle" = "请使用 usbliter8 将设备进入 PWND DFU 模式";
+
+/* 确认步骤 */
+"confirm.warning" = "⚠️ 此操作将擦除设备上的所有数据，且不可恢复。";
+"confirm.button" = "擦除设备";
+"confirm.cancel" = "取消";
+"confirm.pwnd" = "✓ 已 PWND";
+"confirm.not_pwnd" = "✗ 未 PWND";
+
+/* 执行步骤 */
+"executing.warning" = "请勿断开设备连接";
+"phase.uploading" = "正在上传 iBEC…";
+"phase.booting" = "正在启动 iBEC…";
+"phase.waiting_recovery" = "等待恢复模式…";
+"phase.sending_commands" = "正在发送擦除指令…";
+"phase.rebooting" = "正在重启设备…";
+
+/* 完成步骤 */
+"done.success_title" = "擦除完成";
+"done.success_detail" = "设备将开始抹掉所有内容和设置。";
+"done.erase_another" = "擦除另一台设备";
+"done.failure_title" = "擦除失败";
+"done.retry" = "重试";
+
+/* 错误信息 */
+"error.no_device" = "未检测到 DFU 设备，请连接已进入 PWND DFU 模式的设备。";
+"error.not_pwnd" = "检测到设备但未处于 PWND 状态，请先使用 usbliter8。";
+"error.unsupported_device" = "不支持的设备";
+"error.ibec_not_found" = "未找到 iBEC 文件，请将其放入 Application Support/EraseA12/boot/ 或重新安装应用。";
+"error.upload_failed" = "上传 iBEC 失败";
+"error.boot_failed" = "启动 iBEC 失败";
+"error.recovery_timeout" = "等待恢复模式超时，请重新连接后重试。";
+"error.command_failed" = "发送擦除指令失败";
+"error.device_disconnected" = "设备意外断开，请重新进入 PWND DFU 模式后重试。";
+"error.unknown" = "发生错误";

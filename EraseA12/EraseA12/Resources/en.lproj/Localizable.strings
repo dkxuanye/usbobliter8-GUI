@@ -1,0 +1,43 @@
+/* Step titles */
+"step.waiting" = "Connect";
+"step.confirm" = "Confirm";
+"step.executing" = "Erase";
+"step.done" = "Done";
+
+/* Waiting step */
+"waiting.title" = "Waiting for Device";
+"waiting.subtitle" = "Please put your device into PWND DFU mode using usbliter8";
+
+/* Confirm step */
+"confirm.warning" = "⚠️ This will erase ALL data on the device. This action cannot be undone.";
+"confirm.button" = "Erase Device";
+"confirm.cancel" = "Cancel";
+"confirm.pwnd" = "✓ PWND";
+"confirm.not_pwnd" = "✗ Not PWND";
+
+/* Executing step */
+"executing.warning" = "Do not disconnect the device";
+"phase.uploading" = "Uploading iBEC…";
+"phase.booting" = "Booting iBEC…";
+"phase.waiting_recovery" = "Waiting for Recovery mode…";
+"phase.sending_commands" = "Sending erase commands…";
+"phase.rebooting" = "Rebooting device…";
+
+/* Done step */
+"done.success_title" = "Erase Complete";
+"done.success_detail" = "The device will now erase all content and settings.";
+"done.erase_another" = "Erase Another Device";
+"done.failure_title" = "Erase Failed";
+"done.retry" = "Try Again";
+
+/* Errors */
+"error.no_device" = "No DFU device detected. Please connect a device in PWND DFU mode.";
+"error.not_pwnd" = "Device detected but not in PWND state. Please use usbliter8 first.";
+"error.unsupported_device" = "Unsupported device";
+"error.ibec_not_found" = "iBEC file not found. Place it in Application Support/EraseA12/boot/ or reinstall the app.";
+"error.upload_failed" = "Failed to upload iBEC";
+"error.boot_failed" = "Failed to boot iBEC";
+"error.recovery_timeout" = "Timed out waiting for Recovery mode. Please reconnect and try again.";
+"error.command_failed" = "Failed to send erase commands";
+"error.device_disconnected" = "Device disconnected unexpectedly. Please re-enter PWND DFU mode and try again.";
+"error.unknown" = "An error occurred";
