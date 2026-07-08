@@ -2,7 +2,7 @@
 
 ## P0 - 必须优先处理
 
-- [ ] 移除 `/usr/local/opt/openssl@3` 运行时依赖，改为 universal 静态链接或正确嵌入并重签名。
+- [x] 移除 `/usr/local/opt/openssl@3` 运行时依赖，改为 universal 静态链接或正确嵌入并重签名。
 - [ ] 在受控且允许清空的 A12/A13 测试设备上完成一次端到端擦除验证。
 
 ## P1 - 重要任务
@@ -32,3 +32,9 @@
 - [x] 新增 `Scripts/make-dmg-background.swift`，用 Core Graphics 生成可视化 DMG 背景图（含“拖动到 Applications”指引）。
 - [x] 改进 `Scripts/package-dmg.sh`：clean Release 构建、ad-hoc 签名、`.background/` 背景图、Applications 符号链接、用 Finder 自动配置窗口布局生成 `.DS_Store`，输出 UDZO 压缩 DMG。
 - [x] 2026-07-08 18:39 完成 DMG 打包验证：14M、`.DS_Store` 含 `backgroundImageAlias` 引用背景图，挂载后 Finder 自动显示安装指引窗口。
+- [x] 新增联网更新检查：App/UpdateChecker.swift + UpdateCheckerTests.swift（6 项）+ AppDelegate 集成 + 强制退出策略（避免用户绕过）。
+- [x] 2026-07-08 21:35 完成 39/39 测试、clean Release 构建、严格签名、universal binary 验证。
+- [x] 设计文档：`docs/superpowers/specs/2026-07-08-erasea12-update-checker-design.md` 已 commit。
+- [x] 2026-07-08 21:50 "编译 = 打 DMG" 流程固化：Makefile 加 `release`/`dmg` 目标，AGENTS.md 改"验证基线"为标准，修复 package-dmg.sh SKIP 路径 bug。
+- [x] 2026-07-08 22:08 集成 OpenSSL dylib：编译 universal libssl/libcrypto 3.6.2 嵌入 .app/Contents/Frameworks/，改 install name + RPATH + 重签，otool -L 不再依赖 /usr/local/opt。
+- [x] 2026-07-08 22:10 自包含 DMG 验证：19M，SHA-256 `3d09e4f7...`，LC_RPATH `@executable_path/../Frameworks`，dylib 严格签名通过。

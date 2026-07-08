@@ -61,6 +61,19 @@ echo "[2/6] ad-hoc 签名..."
 codesign --force --deep --sign - "$BUILD_DIR/EraseA12.app"
 codesign --verify --deep --strict --verbose=2 "$BUILD_DIR/EraseA12.app"
 
+# ---- 2.5 嵌入 OpenSSL dylib（必须在签名之后、staging 之前；build/opessl 已 universal） ----
+VENDOR_OPENSSL_LIB="$PROJECT_DIR/Vendor/openssl/lib"
+if [[ -f "$VENDOR_OPENSSL_LIB/libssl.3.dylib" ]] && [[ -f "$VENDOR_OPENSSL_LIB/libcrypto.3.dylib" ]]; then
+    echo ""
+    echo "[2.5/6] 嵌入 OpenSSL dylib..."
+    "$SCRIPT_DIR/bundle-openssl.sh" "$BUILD_DIR/EraseA12.app" || {
+        echo "  警告：bundle-openssl.sh 失败，继续打包流程" >&2
+    }
+else
+    echo ""
+    echo "[2.5/6] 跳过 OpenSSL 嵌入（Vendor/openssl 不完整，跑 ./Scripts/build-openssl.sh 编译）"
+fi
+
 # ---- 3. 生成背景图 ----
 echo ""
 echo "[3/6] 生成 DMG 背景图..."
@@ -103,7 +116,18 @@ echo ""
 echo "[5/6] 配置 DMG 窗口布局..."
 
 if [[ "${SKIP_DMG_FINDER_LAYOUT:-0}" == "1" ]]; then
-    echo "  跳过（SKIP_DMG_FINDER_LAYOUT=1）"
+    echo "  跳过（SKIP_DMG_FINDER_LAYOUT=1），直接从 staging 生成 DMG"
+    rm -f "$DMG_OUTPUT"
+    hdiutil create -volname "EraseA12" \
+        -srcfolder "$DMG_STAGE_DIR" \
+        -ov -format UDZO \
+        -imagekey zlib-level=9 \
+        -o "$DMG_OUTPUT" >/dev/null
+    if [[ ! -f "$DMG_OUTPUT" ]]; then
+        echo "  错误：UDZO DMG 生成失败" >&2
+        exit 1
+    fi
+    echo "  已生成压缩 DMG（无 .DS_Store）: $DMG_OUTPUT"
 else
     # 挂载中间态 DMG 让 Finder 自动生成 .DS_Store
     RW_DMG="$PROJECT_DIR/build/${DMG_NAME}-rw.dmg"

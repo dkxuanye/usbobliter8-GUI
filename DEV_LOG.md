@@ -1,5 +1,71 @@
 # DEV_LOG.md - 开发日志
 
+## 2026-07-08 22:08 +0800 - 集成 OpenSSL dylib，开箱即用
+
+### 用户反馈
+
+> "你要集成 OpenSSL 动态依赖，做到别人可以开箱即用"
+
+### 背景
+
+之前 EraseA12 二进制动态链接 `/usr/local/opt/openssl@3/lib/libssl.3.dylib`，
+在没有 Homebrew OpenSSL 的 Mac 上启动会失败（dlopen 找不到库）。
+系统 OpenSSL dylib 只有 x86_64，没有 arm64，跟 EraseA12 的 universal binary 不匹配。
+
+### 实现
+
+- **新增 `Scripts/build-openssl.sh`**：从 openssl.org 下载 OpenSSL 3.6.2 源码，
+  分别用 `darwin64-x86_64-cc` 和 `darwin64-arm64-cc` 配置编译两遍：
+  - 第一遍 `no-shared` → universal 静态库 `.a`（备用）
+  - 第二遍 `shared` → universal 动态库 `.dylib`
+  - `lipo -create` 合成 `libssl.3.dylib`（2.0M）和 `libcrypto.3.dylib`（10.5M）
+  - 产物：`EraseA12/Vendor/openssl/lib/` + `EraseA12/Vendor/openssl/include/openssl/`
+  - 编译耗时约 8 分钟（带 -j 多核）
+- **新增 `Scripts/bundle-openssl.sh`**：把 universal dylib 嵌入 `.app/Contents/Frameworks/`：
+  1. 拷贝 `libssl.3.dylib` / `libcrypto.3.dylib` 到 Frameworks/
+  2. `install_name_tool -id @rpath/libssl.3.dylib` 改 dylib 自身 install name
+  3. `install_name_tool -change` 改 libssl 内部对 libcrypto 的引用
+  4. `install_name_tool -add_rpath @executable_path/../Frameworks` 给可执行加 RPATH
+  5. `install_name_tool -change` 改 EraseA12 二进制对 libssl/libcrypto 的引用
+  6. 重新签名（dylib 先签，app 后签）
+- **改 `Scripts/package-dmg.sh`**：在 `[2/6] ad-hoc 签名` 之后插入 `[2.5/6] 嵌入 OpenSSL dylib`。
+  关键坑：之前想在 `[0/6]` 嵌入，但 `xcodebuild clean build` 会删 build 目录，
+  把刚嵌入的 Frameworks/ 一起清掉。必须放在 build+sign 之后、staging 之前。
+
+### 测试与构建
+
+- 编译前：otool -L 显示依赖 `/usr/local/opt/openssl@3/...`（无法分发）
+- 编译后：otool -L 显示依赖 `@rpath/libssl.3.dylib` / `@rpath/libcrypto.3.dylib`
+- `otool -l` 验证 LC_RPATH 含 `@executable_path/../Frameworks`
+- 严格签名通过：两个 dylib + app 全部 `--prepared/--validated`
+- DMG 19M（之前 14M + 5M OpenSSL）
+- 39/39 测试通过（OpenSSL 嵌入不影响功能）
+- DMG SHA-256 `3d09e4f797f168453198c5d02f1821247addbdfd4ffb6f0ad3f9f295b2efe9cd`
+
+### 仍存在的限制
+
+- DMG 仍为 ad-hoc 签名，需要 Developer ID + Apple 公证才能跨机器免 Gatekeeper 警告
+- 没用 OpenSSL FIPS 模块
+
+## 2026-07-08 21:50 +0800 - "编译 = 打 DMG" 流程固化
+
+### 用户反馈
+
+> "你怎么没有打包 dmg，下次我让你编译 APP，就要顺带打包 dmg"
+
+### 改动
+
+- `EraseA12/Makefile` 新增 `release` 和 `dmg` 一键目标，调用 `Scripts/package-dmg.sh`，
+  避免再次出现"只 build 不打 DMG"的情况。
+- `Scripts/package-dmg.sh` 修了一个**潜在 bug**：`SKIP_DMG_FINDER_LAYOUT=1` 路径
+  之前只 echo 跳过，**没有真正生成 DMG**。改为 echo 跳过 + 直接从 staging 用
+  `hdiutil create -format UDZO` 生成 DMG（牺牲 .DS_Store，换取无 GUI 环境也能成功打包）。
+- `AGENTS.md` 重写"EraseA12 验证基线"章节：明确"编译 APP"必须顺带打 DMG，
+  主命令从 `make build` 改为 `make release`，并保留 `SKIP_DMG_FINDER_LAYOUT=1` 用法。
+- 验证：跑了一次完整 `make release`（GUI 环境），产物 14M DMG，
+  SHA-256 `3644b82d63594c4c1707080eecb672b7686c77996b6cac8835cc85fa7acec682`，
+  含 `.background/dmg-background.png`、Applications 符号链接、EraseA12.app。
+
 ## 2026-07-08 21:35 +0800 - EraseA12 联网更新检查
 
 ### 设计与实现

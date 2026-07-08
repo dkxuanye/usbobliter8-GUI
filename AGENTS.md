@@ -28,7 +28,44 @@
 
 ## EraseA12 验证基线
 
-从仓库根目录执行：
+**用户原话**："下次我让你编译 APP，就要顺带打包 dmg。"
+
+**编译 APP = clean Release 构建 + ad-hoc 签名 + DMG 打包**。不要只 build 不打 DMG。
+
+一键命令（从 `EraseA12/` 目录）：
+
+```bash
+make release
+```
+
+这会跑 `Scripts/package-dmg.sh`：
+1. clean Release 构建
+2. ad-hoc 签名
+3. 生成 DMG 背景图
+4. 准备 staging（含 `.background/`、Applications 符号链接、《打开方式.txt》）
+5. GUI 环境用 Finder 自动配置窗口布局生成 `.DS_Store`；无 GUI 环境加 `SKIP_DMG_FINDER_LAYOUT=1` 跳过
+6. 转 UDZO 压缩 DMG → 产物在仓库根目录 `EraseA12-<version>.dmg`
+
+GUI 环境：
+
+```bash
+cd EraseA12
+make release
+```
+
+无 GUI 环境（CI、远程）：
+
+```bash
+cd EraseA12
+SKIP_DMG_FINDER_LAYOUT=1 make release
+```
+
+`EraseA12.xcodeproj` 被忽略，标准来源是 `EraseA12/project.yml`。新增源文件或测试后，应使用
+`xcodegen generate -s EraseA12/project.yml -o EraseA12/EraseA12.xcodeproj` 重新生成项目。
+
+只跑测试用 `make test`（从 `EraseA12/`）。
+
+发布前最终验证基线：
 
 ```bash
 xcodebuild test \
@@ -37,25 +74,19 @@ xcodebuild test \
   -configuration Debug \
   -destination 'platform=macOS'
 
-xcodebuild build \
-  -project EraseA12/EraseA12.xcodeproj \
-  -scheme EraseA12 \
-  -configuration Release \
-  CONFIGURATION_BUILD_DIR="$PWD"
+cd EraseA12
+make release
 ```
 
-随后至少检查：
+随后检查：
 
 ```bash
-codesign --verify --deep --strict --verbose=2 EraseA12.app
-file EraseA12.app/Contents/MacOS/EraseA12
-otool -L EraseA12.app/Contents/MacOS/EraseA12
-plutil -lint EraseA12/EraseA12/Resources/*/Localizable.strings
+codesign --verify --deep --strict --verbose=2 ../EraseA12.app
+file ../EraseA12.app/Contents/MacOS/EraseA12
+otool -L ../EraseA12.app/Contents/MacOS/EraseA12
+plutil -lint EraseA12/Resources/*/Localizable.strings
 git diff --check
 ```
-
-`EraseA12.xcodeproj` 被忽略，标准来源是 `EraseA12/project.yml`。新增源文件或测试后，应使用
-`xcodegen generate -s EraseA12/project.yml -o EraseA12/EraseA12.xcodeproj` 重新生成项目。
 
 ## 会话管理
 
