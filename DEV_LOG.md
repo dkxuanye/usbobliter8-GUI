@@ -1,5 +1,20 @@
 # DEV_LOG.md - 开发日志
 
+## 2026-07-08 15:02 +0800 - clean Release 复编译
+
+### 执行结果
+
+- 完整 Xcode 测试通过：26 项通过，0 失败。
+- 执行 clean Release 构建，重新生成仓库根目录 `EraseA12.app`。
+- 严格签名校验通过；可执行文件为 `x86_64 + arm64` universal binary。
+- 中英文字符串表通过语法检查，App 内包含 11 份 patched iBEC。
+- 可执行文件 SHA-256：`55d5f0f2e62386e5c2c13b625c133e9cd7e6f046158ff65183c993a520afe4c9`。
+
+### 仍存在的发布限制
+
+- 链接阶段仍报告 OpenSSL 架构和最低系统版本警告；最终二进制继续引用
+  `/usr/local/opt/openssl@3/lib/libssl.3.dylib` 和 `libcrypto.3.dylib`，跨机器分发问题未解决。
+
 ## 2026-07-08 12:27 +0800 - 中文界面、布局修复与发布交接
 
 ### 最近修改
