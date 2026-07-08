@@ -1,5 +1,32 @@
 # DEV_LOG.md - 开发日志
 
+## 2026-07-08 17:38 +0800 - EraseA12 专用应用图标
+
+### 设计与实现
+
+- 采用已确认的“设备轮廓 + 横向清除光带”方案：深石墨圆角底板、银白设备轮廓、
+  电光蓝扫描线和一个暖红状态点，不包含文字、Apple 标志或具体设备商标。
+- 从同一张 1024×1024 母版生成 macOS 16、32、128、256、512 点的 1x/2x 共 10 个 PNG。
+- 新增 `AppIcon.appiconset/Contents.json`，并在 `project.yml` 指定
+  `ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon`。
+- 新增源代码树回归测试，检查 10 个槽位、文件存在性、PNG 解码和实际像素尺寸。
+- “关于 EraseA12”继续读取系统应用图标，无需额外复制资源或修改窗口逻辑。
+
+### 测试与构建
+
+- 按 TDD 先确认资产目录缺失时聚焦测试失败，再生成和接入全部图标资产。
+- 聚焦 AppIcon 测试通过；完整测试为 33/33 通过，0 失败。
+- clean Release 构建成功，bundle 含 `CFBundleIconFile=AppIcon`、`CFBundleIconName=AppIcon`、
+  `AppIcon.icns` 和 `Assets.car`。
+- 严格签名、`x86_64 + arm64`、11 份 iBEC 和中英文字符串表检查通过。
+- 实际启动 Release 应用并打开关于窗口，新图标显示清楚，现有版权与开发者署名未受影响。
+- Release 可执行文件 SHA-256：`13444f3cb09853bb6a3af821bd511e45e295d3705ce1c1d457bbb1df5673d653`。
+- 未连接或擦除任何真机。
+
+### 仍存在的限制
+
+- OpenSSL 动态依赖及最低系统版本链接警告仍存在，跨机器分发限制未解决。
+
 ## 2026-07-08 16:42 +0800 - 补充主窗口可见的关于按钮
 
 ### 根因与修复
