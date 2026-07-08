@@ -5,3 +5,4 @@ DerivedData/
 .superpowers/
 .DS_Store
 .vendor-build/
+*.dmg

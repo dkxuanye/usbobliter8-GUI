@@ -27,7 +27,13 @@ final class IBECResolver {
         if let override = bundleDirOverride {
             return override
         }
-        return bundle.resourceURL?.appendingPathComponent("boot") ?? bundle.resourceURL!
+        // Xcode flattens resource directories — iBEC files end up directly in Resources/
+        // Check Resources/boot/ first (correct structure), then fall back to Resources/ (flattened)
+        let bootSubdir = bundle.resourceURL?.appendingPathComponent("boot")
+        if let bootDir = bootSubdir, FileManager.default.fileExists(atPath: bootDir.path) {
+            return bootDir
+        }
+        return bundle.resourceURL ?? bundle.bundleURL
     }
 
     // MARK: - Init

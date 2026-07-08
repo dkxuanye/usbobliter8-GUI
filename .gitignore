@@ -1,1 +1,6 @@
 .superpowers/
+.DS_Store
+/build/
+/EraseA12.app/
+/EraseA12.swiftmodule/
+*.dSYM/

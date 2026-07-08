@@ -7,6 +7,7 @@ final class WaitingStepViewController: NSViewController {
     private let iconView = NSImageView()
     private let titleLabel = NSTextField(labelWithString: "")
     private let subtitleLabel = NSTextField(labelWithString: "")
+    private let contentStackView = NSStackView()
 
     // MARK: - Lifecycle
 
@@ -42,36 +43,43 @@ final class WaitingStepViewController: NSViewController {
     // MARK: - UI Setup
 
     private func setupUI() {
+        // Content stack
+        contentStackView.translatesAutoresizingMaskIntoConstraints = false
+        contentStackView.orientation = .vertical
+        contentStackView.alignment = .centerX
+        contentStackView.spacing = 0
+        view.addSubview(contentStackView)
+
         // Icon
         iconView.translatesAutoresizingMaskIntoConstraints = false
         iconView.contentTintColor = .secondaryLabelColor
         if #available(macOS 11.0, *) {
             iconView.image = NSImage(systemSymbolName: "cable.connector",
-                                     accessibilityDescription: NSLocalizedString("USB Cable", comment: "Accessibility: cable connector icon"))
+                                     accessibilityDescription: L10n.text("accessibility.usb_cable", fallback: "USB 线缆"))
             iconView.symbolConfiguration = .init(pointSize: 64, weight: .regular)
         } else {
             // Fallback: use a generic image or empty state
             iconView.image = NSImage(named: NSImage.networkName)
         }
         iconView.isEditable = false
-        view.addSubview(iconView)
+        contentStackView.addArrangedSubview(iconView)
 
         // Title
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        titleLabel.stringValue = NSLocalizedString("Waiting for Device", comment: "Waiting step: title")
+        titleLabel.stringValue = L10n.text("waiting.title", fallback: "等待设备")
         titleLabel.font = NSFont.systemFont(ofSize: 22, weight: .semibold)
         titleLabel.textColor = .labelColor
         titleLabel.isEditable = false
         titleLabel.isSelectable = false
         titleLabel.backgroundColor = .clear
         titleLabel.alignment = .center
-        view.addSubview(titleLabel)
+        contentStackView.addArrangedSubview(titleLabel)
 
         // Subtitle
         subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
-        subtitleLabel.stringValue = NSLocalizedString(
-            "Please put your device into PWND DFU mode using usbliter8",
-            comment: "Waiting step: subtitle instruction"
+        subtitleLabel.stringValue = L10n.text(
+            "waiting.subtitle",
+            fallback: "请使用 usbliter8 将设备进入 PWND DFU 模式"
         )
         subtitleLabel.font = NSFont.systemFont(ofSize: 13, weight: .regular)
         subtitleLabel.textColor = .secondaryLabelColor
@@ -82,21 +90,25 @@ final class WaitingStepViewController: NSViewController {
         subtitleLabel.lineBreakMode = .byWordWrapping
         subtitleLabel.maximumNumberOfLines = 2
         subtitleLabel.preferredMaxLayoutWidth = 360
-        view.addSubview(subtitleLabel)
+        contentStackView.addArrangedSubview(subtitleLabel)
+
+        contentStackView.setCustomSpacing(16, after: iconView)
+        contentStackView.setCustomSpacing(8, after: titleLabel)
 
         // Layout
         NSLayoutConstraint.activate([
-            iconView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            iconView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 30),
+            contentStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            contentStackView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 4),
+            contentStackView.leadingAnchor.constraint(greaterThanOrEqualTo: view.leadingAnchor, constant: 24),
+            contentStackView.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -24),
+            contentStackView.topAnchor.constraint(greaterThanOrEqualTo: view.topAnchor, constant: 16),
+            contentStackView.bottomAnchor.constraint(lessThanOrEqualTo: view.bottomAnchor, constant: -24),
+
             iconView.widthAnchor.constraint(equalToConstant: 80),
             iconView.heightAnchor.constraint(equalToConstant: 80),
 
-            titleLabel.topAnchor.constraint(equalTo: iconView.bottomAnchor, constant: 16),
-            titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-
-            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8),
-            subtitleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            subtitleLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 360)
+            subtitleLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 360),
+            subtitleLabel.widthAnchor.constraint(lessThanOrEqualTo: view.widthAnchor, constant: -48)
         ])
     }
 

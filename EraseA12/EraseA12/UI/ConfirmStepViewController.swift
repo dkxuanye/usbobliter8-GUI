@@ -70,9 +70,9 @@ final class ConfirmStepViewController: NSViewController {
 
         // Warning
         warningLabel.translatesAutoresizingMaskIntoConstraints = false
-        warningLabel.stringValue = NSLocalizedString(
-            "⚠️ This will erase ALL data on this device. This action cannot be undone.",
-            comment: "Confirm step: warning message"
+        warningLabel.stringValue = L10n.text(
+            "confirm.warning",
+            fallback: "⚠️ 此操作将擦除设备上的所有数据，且不可恢复。"
         )
         warningLabel.font = NSFont.systemFont(ofSize: 12, weight: .medium)
         warningLabel.textColor = .systemRed
@@ -84,7 +84,7 @@ final class ConfirmStepViewController: NSViewController {
 
         // Erase button
         eraseButton.translatesAutoresizingMaskIntoConstraints = false
-        eraseButton.title = NSLocalizedString("Erase Device", comment: "Confirm step: erase button")
+        eraseButton.title = L10n.text("confirm.button", fallback: "擦除设备")
         eraseButton.font = NSFont.systemFont(ofSize: 13, weight: .semibold)
         eraseButton.bezelStyle = .rounded
         eraseButton.wantsLayer = true
@@ -98,7 +98,7 @@ final class ConfirmStepViewController: NSViewController {
 
         // Cancel button
         cancelButton.translatesAutoresizingMaskIntoConstraints = false
-        cancelButton.title = NSLocalizedString("Cancel", comment: "Confirm step: cancel button")
+        cancelButton.title = L10n.text("confirm.cancel", fallback: "取消")
         cancelButton.font = NSFont.systemFont(ofSize: 13, weight: .regular)
         cancelButton.bezelStyle = .rounded
         cancelButton.target = self
@@ -141,29 +141,26 @@ final class ConfirmStepViewController: NSViewController {
     func configure(deviceName: String, cpid: String, bdid: Int, isPWND: Bool, ibecCodename: String, canErase: Bool) {
         deviceNameLabel.stringValue = deviceName
 
-        chipInfoLabel.stringValue = String(format: NSLocalizedString(
-            "CPID:%@ BDID:%d",
-            comment: "Confirm step: chip info format"
-        ), cpid, bdid)
+        chipInfoLabel.stringValue = L10n.format(
+            "confirm.chip_format",
+            fallback: "CPID:%@ BDID:%d",
+            cpid,
+            bdid
+        )
 
         if isPWND {
-            pwndStatusLabel.stringValue = "✓ " + NSLocalizedString(
-                "PWND",
-                comment: "Confirm step: PWND status positive"
-            )
+            pwndStatusLabel.stringValue = L10n.text("confirm.pwnd", fallback: "✓ 已 PWND")
             pwndStatusLabel.textColor = .systemGreen
         } else {
-            pwndStatusLabel.stringValue = "✗ " + NSLocalizedString(
-                "Not PWND",
-                comment: "Confirm step: PWND status negative"
-            )
+            pwndStatusLabel.stringValue = L10n.text("confirm.not_pwnd", fallback: "✗ 未 PWND")
             pwndStatusLabel.textColor = .systemRed
         }
 
-        ibecLabel.stringValue = String(format: NSLocalizedString(
-            "iBEC: %@",
-            comment: "Confirm step: iBEC codename"
-        ), ibecCodename)
+        ibecLabel.stringValue = L10n.format(
+            "confirm.ibec_format",
+            fallback: "iBEC：%@",
+            ibecCodename
+        )
 
         eraseButton.isEnabled = canErase
         eraseButton.alphaValue = canErase ? 1.0 : 0.5

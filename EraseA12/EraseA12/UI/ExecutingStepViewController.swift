@@ -64,10 +64,7 @@ final class ExecutingStepViewController: NSViewController {
 
         // Warning
         warningLabel.translatesAutoresizingMaskIntoConstraints = false
-        warningLabel.stringValue = NSLocalizedString(
-            "Do not disconnect the device",
-            comment: "Executing step: warning not to disconnect"
-        )
+        warningLabel.stringValue = L10n.text("executing.warning", fallback: "请勿断开设备连接")
         warningLabel.font = NSFont.systemFont(ofSize: 12, weight: .regular)
         warningLabel.textColor = .secondaryLabelColor
         warningLabel.alignment = .center
@@ -95,21 +92,21 @@ final class ExecutingStepViewController: NSViewController {
         let text: String
         switch state {
         case .idle:
-            text = NSLocalizedString("Preparing…", comment: "Executing step: idle phase")
+            text = L10n.text("phase.preparing", fallback: "准备中…")
         case .uploading:
-            text = NSLocalizedString("Uploading iBEC…", comment: "Executing step: uploading phase")
+            text = L10n.text("phase.uploading", fallback: "正在上传 iBEC…")
         case .booting:
-            text = NSLocalizedString("Booting iBEC…", comment: "Executing step: booting phase")
+            text = L10n.text("phase.booting", fallback: "正在启动 iBEC…")
         case .waitingRecovery:
-            text = NSLocalizedString("Waiting for recovery mode…", comment: "Executing step: waiting recovery phase")
+            text = L10n.text("phase.waiting_recovery", fallback: "等待恢复模式…")
         case .sendingCommands:
-            text = NSLocalizedString("Sending erase commands…", comment: "Executing step: sending commands phase")
+            text = L10n.text("phase.sending_commands", fallback: "正在发送擦除指令…")
         case .rebooting:
-            text = NSLocalizedString("Rebooting device…", comment: "Executing step: rebooting phase")
+            text = L10n.text("phase.rebooting", fallback: "正在重启设备…")
         case .done:
-            text = NSLocalizedString("Complete!", comment: "Executing step: done phase")
+            text = L10n.text("phase.complete", fallback: "已完成")
         case .failed:
-            text = NSLocalizedString("Failed", comment: "Executing step: failed phase")
+            text = L10n.text("phase.failed", fallback: "失败")
         }
         phaseLabel.stringValue = text
     }

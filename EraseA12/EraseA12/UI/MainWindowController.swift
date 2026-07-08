@@ -90,9 +90,9 @@ final class MainWindowController: NSWindowController {
 
             stepIndicator.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
             stepIndicator.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            stepIndicator.heightAnchor.constraint(equalToConstant: 40),
+            stepIndicator.heightAnchor.constraint(equalToConstant: 48),
 
-            containerView.topAnchor.constraint(equalTo: stepIndicator.bottomAnchor, constant: 8),
+            containerView.topAnchor.constraint(equalTo: stepIndicator.bottomAnchor, constant: 4),
             containerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             containerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             containerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
@@ -257,7 +257,7 @@ extension MainWindowController: USBDeviceMonitorDelegate {
 
         case .unsupportedChip(let cpid):
             confirmVC.configure(
-                deviceName: NSLocalizedString("Unsupported Device", comment: "Device name for unsupported chip"),
+                deviceName: L10n.text("device.unsupported", fallback: "不支持的设备"),
                 cpid: cpid,
                 bdid: 0,
                 isPWND: false,
@@ -268,7 +268,7 @@ extension MainWindowController: USBDeviceMonitorDelegate {
 
         case .unknownBoard(let cpid, let bdid):
             confirmVC.configure(
-                deviceName: NSLocalizedString("Unknown Device", comment: "Device name for unknown board"),
+                deviceName: L10n.text("device.unknown", fallback: "未知设备"),
                 cpid: cpid,
                 bdid: bdid,
                 isPWND: false,

@@ -104,21 +104,21 @@ final class DoneStepViewController: NSViewController {
 
         if #available(macOS 11.0, *) {
             iconView.image = NSImage(systemSymbolName: "checkmark.circle.fill",
-                                     accessibilityDescription: NSLocalizedString("Success", comment: "Accessibility: success icon"))
+                                     accessibilityDescription: L10n.text("accessibility.success", fallback: "成功"))
             iconView.contentTintColor = .systemGreen
         } else {
             iconView.image = NSImage(named: NSImage.statusAvailableName)
         }
 
-        titleLabel.stringValue = NSLocalizedString("Erase Complete", comment: "Done step: success title")
+        titleLabel.stringValue = L10n.text("done.success_title", fallback: "擦除完成")
         titleLabel.textColor = .systemGreen
 
-        detailLabel.stringValue = NSLocalizedString(
-            "The device has been successfully erased.",
-            comment: "Done step: success detail"
+        detailLabel.stringValue = L10n.text(
+            "done.success_detail",
+            fallback: "设备将开始抹掉所有内容和设置。"
         )
 
-        actionButton.title = NSLocalizedString("Erase Another Device", comment: "Done step: erase another button")
+        actionButton.title = L10n.text("done.erase_another", fallback: "擦除另一台设备")
     }
 
     func configureFailure(error: ObliterationError) {
@@ -126,18 +126,18 @@ final class DoneStepViewController: NSViewController {
 
         if #available(macOS 11.0, *) {
             iconView.image = NSImage(systemSymbolName: "xmark.circle.fill",
-                                     accessibilityDescription: NSLocalizedString("Failure", comment: "Accessibility: failure icon"))
+                                     accessibilityDescription: L10n.text("accessibility.failure", fallback: "失败"))
             iconView.contentTintColor = .systemRed
         } else {
             iconView.image = NSImage(named: NSImage.statusUnavailableName)
         }
 
-        titleLabel.stringValue = NSLocalizedString("Erase Failed", comment: "Done step: failure title")
+        titleLabel.stringValue = L10n.text("done.failure_title", fallback: "擦除失败")
         titleLabel.textColor = .systemRed
 
         detailLabel.stringValue = error.description
 
-        actionButton.title = NSLocalizedString("Try Again", comment: "Done step: try again button")
+        actionButton.title = L10n.text("done.retry", fallback: "重试")
     }
 
     // MARK: - Actions

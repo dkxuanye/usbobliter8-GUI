@@ -20,14 +20,14 @@ Erasing tool for A12/A13 iOS devices. Uploads a patched iBEC, and triggers iOS' 
 
 # EraseA12 (Native macOS App)
 
-A native macOS version of usbobliter8, built with Swift + AppKit. No Python or dependencies needed — just download and run.
+A native macOS version of usbobliter8, built with Swift + AppKit. No Python runtime is required.
 
 ### Features
 - Detects PWND DFU devices automatically via USB
 - Guided 4-step wizard: Connect → Confirm → Erase → Done
 - Modern Liquid Glass UI with macOS version adaptation
 - Supports all 11 A12/A13 devices from usbobliter8
-- Bilingual: English + Simplified Chinese (follows system language)
+- Simplified Chinese interface throughout the app
 
 ### Requirements
 - macOS 10.15 (Catalina) or later
@@ -66,3 +66,9 @@ A native macOS version of usbobliter8, built with Swift + AppKit. No Python or d
 Since EraseA12 is not code-signed with a paid developer certificate:
 1. Right-click the app → Select "Open"
 2. Or go to **System Settings → Privacy & Security** and click "Open Anyway"
+
+### Current Packaging Limitation
+
+The current local Release build still dynamically links Homebrew OpenSSL from
+`/usr/local/opt/openssl@3`. Bundle or statically link OpenSSL before distributing the
+app to Macs that do not provide those libraries at the same path.

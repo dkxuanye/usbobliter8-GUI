@@ -39,19 +39,36 @@ final class LibirecoveryBridge {
 
         var description: String {
             switch self {
-            case .noDevice:         return "No device found"
-            case .unableToConnect:  return "Unable to connect to device"
-            case .usbUpload:        return "USB upload error"
-            case .usbStatus:        return "USB status error"
-            case .usbInterface:     return "USB interface error"
-            case .usbConfiguration: return "USB configuration error"
-            case .pipe:             return "Pipe error"
-            case .timeout:          return "Operation timed out"
-            case .unsupported:      return "Unsupported operation"
-            case .unknown(let c):   return "Unknown libirecovery error (\(c))"
-            case .fileNotFound:     return "File not found"
-            case .invalidInput:     return "Invalid input"
-            case .outOfMemory:      return "Out of memory"
+            case .noDevice:
+                return L10n.text("bridge.no_device", fallback: "未找到设备")
+            case .unableToConnect:
+                return L10n.text("bridge.unable_to_connect", fallback: "无法连接设备")
+            case .usbUpload:
+                return L10n.text("bridge.usb_upload", fallback: "USB 上传错误")
+            case .usbStatus:
+                return L10n.text("bridge.usb_status", fallback: "USB 状态错误")
+            case .usbInterface:
+                return L10n.text("bridge.usb_interface", fallback: "USB 接口错误")
+            case .usbConfiguration:
+                return L10n.text("bridge.usb_configuration", fallback: "USB 配置错误")
+            case .pipe:
+                return L10n.text("bridge.pipe", fallback: "USB 管道错误")
+            case .timeout:
+                return L10n.text("bridge.timeout", fallback: "操作超时")
+            case .unsupported:
+                return L10n.text("bridge.unsupported", fallback: "不支持此操作")
+            case .unknown(let code):
+                return L10n.format(
+                    "bridge.unknown_format",
+                    fallback: "未知 libirecovery 错误（%d）",
+                    code.rawValue
+                )
+            case .fileNotFound:
+                return L10n.text("bridge.file_not_found", fallback: "未找到文件")
+            case .invalidInput:
+                return L10n.text("bridge.invalid_input", fallback: "输入无效")
+            case .outOfMemory:
+                return L10n.text("bridge.out_of_memory", fallback: "内存不足")
             }
         }
     }

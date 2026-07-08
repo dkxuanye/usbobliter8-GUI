@@ -13,13 +13,13 @@ final class StepIndicatorView: NSView {
         var title: String {
             switch self {
             case .waiting:
-                return NSLocalizedString("Waiting", comment: "Step indicator: waiting step title")
+                return L10n.text("step.waiting", fallback: "连接")
             case .confirm:
-                return NSLocalizedString("Confirm", comment: "Step indicator: confirm step title")
+                return L10n.text("step.confirm", fallback: "确认")
             case .executing:
-                return NSLocalizedString("Executing", comment: "Step indicator: executing step title")
+                return L10n.text("step.executing", fallback: "擦除")
             case .done:
-                return NSLocalizedString("Done", comment: "Step indicator: done step title")
+                return L10n.text("step.done", fallback: "完成")
             }
         }
     }
@@ -30,11 +30,19 @@ final class StepIndicatorView: NSView {
         didSet { needsDisplay = true }
     }
 
+    struct Layout {
+        let dotCenters: [CGPoint]
+        let titleRects: [CGRect]
+    }
+
     // MARK: - Drawing Constants
 
     private let dotRadius: CGFloat = 6
     private let lineLength: CGFloat = 40
     private let titleFontSize: CGFloat = 10
+    private let dotToTitleGap: CGFloat = 6
+    private let titleHorizontalPadding: CGFloat = 4
+    private let verticalPadding: CGFloat = 4
 
     private let completedColor = NSColor.systemGreen
     private let currentColor   = NSColor.systemBlue
@@ -43,11 +51,10 @@ final class StepIndicatorView: NSView {
     // MARK: - Intrinsic Content Size
 
     override var intrinsicContentSize: NSSize {
-        let totalWidth = CGFloat(Step.allCases.count) * dotRadius * 2
-            + CGFloat(Step.allCases.count - 1) * lineLength
-        let titleHeight: CGFloat = 16
-        let dotToTitleGap: CGFloat = 6
-        return NSSize(width: totalWidth, height: dotRadius * 2 + dotToTitleGap + titleHeight)
+        let totalWidth = dotGroupWidth + titleSideInset * 2
+        let titleHeight = titleSizes().map(\.height).max() ?? 0
+        let height = verticalPadding * 2 + dotRadius * 2 + dotToTitleGap + ceil(titleHeight)
+        return NSSize(width: totalWidth, height: height)
     }
 
     // MARK: - Drawing
@@ -58,24 +65,12 @@ final class StepIndicatorView: NSView {
         guard let context = NSGraphicsContext.current?.cgContext else { return }
 
         let steps = Step.allCases
-        let totalWidth = intrinsicContentSize.width
-        let startX = (bounds.width - totalWidth) / 2
-        let dotCenterY = bounds.height - dotRadius - 16 // leave room for title below
-
-        // Calculate dot center X positions
-        var dotCenters: [CGPoint] = []
-        var currentX = startX + dotRadius
-        for i in 0..<steps.count {
-            dotCenters.append(CGPoint(x: currentX, y: dotCenterY))
-            if i < steps.count - 1 {
-                currentX += lineLength
-            }
-        }
+        let layout = layout(in: bounds)
 
         // Draw connecting lines
         for i in 0..<(steps.count - 1) {
-            let from = dotCenters[i]
-            let to = dotCenters[i + 1]
+            let from = layout.dotCenters[i]
+            let to = layout.dotCenters[i + 1]
             let lineStart = CGPoint(x: from.x + dotRadius, y: from.y)
             let lineEnd = CGPoint(x: to.x - dotRadius, y: to.y)
 
@@ -95,11 +90,8 @@ final class StepIndicatorView: NSView {
         }
 
         // Draw dots and titles
-        let paragraphStyle = NSParagraphStyle.default.mutableCopy() as! NSMutableParagraphStyle
-        paragraphStyle.alignment = .center
-
         for (i, step) in steps.enumerated() {
-            let center = dotCenters[i]
+            let center = layout.dotCenters[i]
 
             // Dot color
             let dotColor: NSColor
@@ -118,18 +110,73 @@ final class StepIndicatorView: NSView {
             context.fillEllipse(in: dotRect)
 
             // Draw title below dot
-            let titleAttributes: [NSAttributedString.Key: Any] = [
-                .font: NSFont.systemFont(ofSize: titleFontSize, weight: .medium),
-                .foregroundColor: dotColor,
-                .paragraphStyle: paragraphStyle
-            ]
-
+            var titleAttributes = self.titleAttributes
+            titleAttributes[.foregroundColor] = dotColor
             let titleString = step.title as NSString
-            let titleSize = titleString.size(withAttributes: titleAttributes)
-            let titleX = center.x - titleSize.width / 2
-            let titleY = center.y - dotRadius - 6 - titleSize.height
-
-            titleString.draw(at: NSPoint(x: titleX, y: titleY), withAttributes: titleAttributes)
+            titleString.draw(in: layout.titleRects[i], withAttributes: titleAttributes)
         }
+    }
+
+    func layout(in bounds: CGRect) -> Layout {
+        let steps = Step.allCases
+        let titleSizes = self.titleSizes()
+        let titleHeight = ceil(titleSizes.map(\.height).max() ?? 0)
+        let requiredHeight = dotRadius * 2 + dotToTitleGap + titleHeight
+        let contentMinY = bounds.minY + max(verticalPadding, (bounds.height - requiredHeight) / 2)
+        let dotCenterY = contentMinY + titleHeight + dotToTitleGap + dotRadius
+
+        let startX = bounds.minX + (bounds.width - dotGroupWidth) / 2
+
+        var dotCenters: [CGPoint] = []
+        var titleRects: [CGRect] = []
+        var currentX = startX + dotRadius
+
+        for (index, _) in steps.enumerated() {
+            let center = CGPoint(x: currentX, y: dotCenterY)
+            dotCenters.append(center)
+
+            let titleSize = titleSizes[index]
+            let titleWidth = ceil(titleSize.width) + titleHorizontalPadding * 2
+            titleRects.append(CGRect(
+                x: center.x - titleWidth / 2,
+                y: contentMinY,
+                width: titleWidth,
+                height: titleHeight
+            ))
+
+            if index < steps.count - 1 {
+                currentX += dotRadius * 2 + lineLength
+            }
+        }
+
+        return Layout(dotCenters: dotCenters, titleRects: titleRects)
+    }
+
+    private var titleAttributes: [NSAttributedString.Key: Any] {
+        let paragraphStyle = NSParagraphStyle.default.mutableCopy() as! NSMutableParagraphStyle
+        paragraphStyle.alignment = .center
+
+        return [
+            .font: NSFont.systemFont(ofSize: titleFontSize, weight: .medium),
+            .foregroundColor: currentColor,
+            .paragraphStyle: paragraphStyle
+        ]
+    }
+
+    private func titleSizes() -> [CGSize] {
+        return Step.allCases.map { step in
+            let size = (step.title as NSString).size(withAttributes: titleAttributes)
+            return CGSize(width: ceil(size.width), height: ceil(size.height))
+        }
+    }
+
+    private var dotGroupWidth: CGFloat {
+        return CGFloat(Step.allCases.count) * dotRadius * 2
+            + CGFloat(Step.allCases.count - 1) * lineLength
+    }
+
+    private var titleSideInset: CGFloat {
+        let widestTitle = titleSizes().map(\.width).max() ?? 0
+        return (widestTitle + titleHorizontalPadding * 2) / 2
     }
 }
