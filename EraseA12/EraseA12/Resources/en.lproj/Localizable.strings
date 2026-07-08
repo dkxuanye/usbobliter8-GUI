@@ -79,3 +79,13 @@
 "bridge.file_not_found" = "File not found";
 "bridge.invalid_input" = "Invalid input";
 "bridge.out_of_memory" = "Out of memory";
+
+/* Online update check */
+"update.outdated_title" = "New version available";
+"update.outdated_body" = "Current version: %@\nLatest version: %@\n\nVisit the download page to update?";
+"update.network_error_title" = "Cannot reach update server";
+"update.network_error_body" = "Please check your network connection and try again.";
+"update.action.open" = "Open Update Page";
+"update.action.quit" = "Quit";
+"update.action.retry" = "Retry";
+"update.action.continue" = "Continue";

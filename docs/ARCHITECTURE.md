@@ -25,7 +25,7 @@ patched iBEC、设置擦除相关 NVRAM 并重启。
 - `EraseA12/EraseA12/Resources/`: 设备表、11 份 iBEC、字符串表和 Info.plist。
 - `EraseA12/EraseA12Tests/`: 识别、资源解析、状态机和 UI 回归测试。
 - `EraseA12/Vendor/libirecovery/`: universal 静态库和头文件。
-- `EraseA12/Scripts/`: vendor 库构建与 DMG 打包脚本。
+- `EraseA12/Scripts/`: vendor 库构建、DMG 背景图生成和 DMG 打包脚本。
 - `boot/`、`main.py`: 原始 Python 版本及其 iBEC 资源。
 - `.github/workflows/`: 当前只覆盖 Python/PyInstaller 构建。
 
@@ -38,7 +38,13 @@ patched iBEC、设置擦除相关 NVRAM 并重启。
 - `ObliterationEngine`: 在后台串行队列执行不可逆擦除流程，并把状态回调到主线程。
 - `MainWindowController`: 管理 USB 监听、设备确认、四个步骤控制器切换和右上角关于按钮。
 - `L10n`: 固定加载 `zh-Hans.lproj`，确保应用不随系统语言切回英文。
-- `AppDelegate`: 创建标准应用菜单，持有主窗口和关于窗口控制器。
+- `AppDelegate`: 创建标准应用菜单，持有主窗口和关于窗口控制器；`applicationDidFinishLaunching` 末尾
+  异步调用 `UpdateChecker.shared.checkForUpdate`，主窗口显示后启动联网版本检查。
+- `UpdateChecker`: 启动时联网版本验证单例，URLSession GET `https://www.dkxuanye.fit/EraseA12/update.json`，
+  与本地 `CFBundleShortVersionString` 字符串等值比较；`UpdateResult` 三态枚举（current / outdated / networkError），
+  回调在主线程。JSON 解析失败或字段缺失视为过期（保守策略），HTTP 非 2xx 或网络层 error 视为网络错误。
+- 升级提示窗（`NSAlert.runModal`）：前往更新 → `NSWorkspace.shared.open("https://dkxuanye.cn")`；退出程序 → `NSApp.terminate`。
+- 网络失败窗：重试 / 退出程序 / 继续使用（继续使用静默放行）。
 - `AboutWindowController`: 展示 bundle 版本、原项目版权、MIT License、GUI 开发者署名和固定 HTTPS 链接。
 
 ## 启动方式
@@ -73,6 +79,19 @@ xcodebuild build \
 ```
 
 `EraseA12.xcodeproj` 是本机生成文件并被忽略，不是长期配置源。
+
+## 打包方式
+
+```bash
+cd EraseA12
+./Scripts/package-dmg.sh
+```
+
+输出：`EraseA12-<version>.dmg`，包含 ad-hoc 签名后的 `EraseA12.app`、`.background/dmg-background.png`
+（Swift + Core Graphics 生成的拖动安装指引背景图）、指向 `/Applications` 的符号链接、
+中英文《打开方式.txt》。GUI 环境会通过 AppleScript 让 Finder 自动配置窗口布局生成
+`.DS_Store`，用户打开 DMG 即看到完整的拖动安装指引；CI 环境可设置
+`SKIP_DMG_FINDER_LAYOUT=1` 跳过 Finder 步骤，背景图仍可通过 Finder 手动启用。
 
 ## 测试方式
 

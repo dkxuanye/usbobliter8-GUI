@@ -5,3 +5,5 @@
 /EraseA12.app/
 /EraseA12.swiftmodule/
 *.dSYM/
+# DMG 是本地分发包，不入库；通过 Scripts/package-dmg.sh 重新生成
+/*.dmg

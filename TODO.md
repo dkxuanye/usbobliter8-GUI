@@ -9,7 +9,6 @@
 
 - [ ] 在干净克隆中安装 xcodegen，从 `project.yml` 生成工程并复跑测试与 Release 构建。
 - [ ] 为 EraseA12 增加 GitHub Actions 构建和单元测试任务。
-- [ ] 更新 DMG 打包流程，加入依赖完整性、架构和签名校验。
 - [ ] 同步早期设计文档中“跟随系统语言”等已经变化的描述。
 
 ## P2 - 后续优化
@@ -30,3 +29,6 @@
 - [x] 增加标准“关于 EraseA12”窗口，展示原作者版权、MIT License、玄烨品果署名和网站链接。
 - [x] 在主窗口右上角增加圆形感叹号按钮，点击打开版权关于窗口。
 - [x] 设计并接入 EraseA12 专用 macOS 应用图标，覆盖 10 个标准 AppIcon 槽位，并推送至 `private/main`。
+- [x] 新增 `Scripts/make-dmg-background.swift`，用 Core Graphics 生成可视化 DMG 背景图（含“拖动到 Applications”指引）。
+- [x] 改进 `Scripts/package-dmg.sh`：clean Release 构建、ad-hoc 签名、`.background/` 背景图、Applications 符号链接、用 Finder 自动配置窗口布局生成 `.DS_Store`，输出 UDZO 压缩 DMG。
+- [x] 2026-07-08 18:39 完成 DMG 打包验证：14M、`.DS_Store` 含 `backgroundImageAlias` 引用背景图，挂载后 Finder 自动显示安装指引窗口。

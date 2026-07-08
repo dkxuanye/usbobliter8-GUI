@@ -79,3 +79,13 @@
 "bridge.file_not_found" = "未找到文件";
 "bridge.invalid_input" = "输入无效";
 "bridge.out_of_memory" = "内存不足";
+
+/* 联网更新检查 */
+"update.outdated_title" = "发现新版本";
+"update.outdated_body" = "当前版本：%@\n最新版本：%@\n\n是否前往下载页更新？";
+"update.network_error_title" = "无法连接到更新服务器";
+"update.network_error_body" = "请检查网络连接后重试。";
+"update.action.open" = "前往更新";
+"update.action.quit" = "退出程序";
+"update.action.retry" = "重试";
+"update.action.continue" = "继续使用";

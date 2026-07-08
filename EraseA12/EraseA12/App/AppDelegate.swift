@@ -13,6 +13,82 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         controller.show()
         mainWindowController = controller
+
+        // 主窗口显示后再异步检查更新，避免阻塞启动视觉反馈
+        checkForAppUpdate()
+    }
+
+    /// 启动时联网版本检查
+    private func checkForAppUpdate() {
+        let currentVersion = UpdateChecker.currentBundleVersion()
+        UpdateChecker.shared.checkForUpdate(currentVersion: currentVersion) { [weak self] result in
+            self?.handleUpdateResult(result, currentVersion: currentVersion)
+        }
+    }
+
+    /// 根据检查结果弹窗或放行
+    private func handleUpdateResult(_ result: UpdateChecker.UpdateResult, currentVersion: String) {
+        switch result {
+        case .current:
+            // 版本一致，啥都不做
+            break
+
+        case .outdated(let remote):
+            presentOutdatedAlert(current: currentVersion, remote: remote)
+
+        case .networkError:
+            presentNetworkErrorAlert()
+        }
+    }
+
+    /// 升级提示窗：前往更新 / 退出程序
+    private func presentOutdatedAlert(current: String, remote: String) {
+        let alert = NSAlert()
+        alert.messageText = L10n.text("update.outdated_title", fallback: "发现新版本")
+        alert.informativeText = L10n.format(
+            "update.outdated_body",
+            fallback: "当前版本：%@\n最新版本：%@\n\n是否前往下载页更新？",
+            current,
+            remote
+        )
+        alert.alertStyle = .warning
+        alert.addButton(withTitle: L10n.text("update.action.open", fallback: "前往更新"))
+        alert.addButton(withTitle: L10n.text("update.action.quit", fallback: "退出程序"))
+
+        let response = alert.runModal()
+        // 任何按钮都退出：避免用户点完"前往更新"关掉浏览器后继续用旧版本绕过检查
+        if response == .alertFirstButtonReturn {
+            if let url = URL(string: "https://dkxuanye.cn") {
+                NSWorkspace.shared.open(url)
+            }
+        }
+        NSApp.terminate(nil)
+    }
+
+    /// 网络失败窗：重试 / 退出程序 / 继续使用
+    private func presentNetworkErrorAlert() {
+        let alert = NSAlert()
+        alert.messageText = L10n.text("update.network_error_title", fallback: "无法连接到更新服务器")
+        alert.informativeText = L10n.text(
+            "update.network_error_body",
+            fallback: "请检查网络连接后重试。"
+        )
+        alert.alertStyle = .warning
+        alert.addButton(withTitle: L10n.text("update.action.retry", fallback: "重试"))
+        alert.addButton(withTitle: L10n.text("update.action.quit", fallback: "退出程序"))
+        alert.addButton(withTitle: L10n.text("update.action.continue", fallback: "继续使用"))
+
+        let response = alert.runModal()
+        switch response {
+        case .alertFirstButtonReturn:
+            // 重试
+            checkForAppUpdate()
+        case .alertSecondButtonReturn:
+            NSApp.terminate(nil)
+        default:
+            // 继续使用，啥都不做
+            break
+        }
     }
 
     func makeMainMenu() -> NSMenu {

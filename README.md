@@ -60,6 +60,12 @@ A native macOS version of usbobliter8, built with Swift + AppKit. No Python runt
    ```bash
    ./Scripts/package-dmg.sh
    ```
+   The script generates a Finder-friendly DMG with:
+   - Custom dark background image (auto-applied via `.DS_Store`) showing drag-to-Applications instructions
+   - `Applications` shortcut linking to your local `/Applications`
+   - Chinese + English `打开方式.txt` with Gatekeeper instructions
+
+   Optional: skip Finder window layout (for CI) with `SKIP_DMG_FINDER_LAYOUT=1`.
 
 ### First Launch
 
