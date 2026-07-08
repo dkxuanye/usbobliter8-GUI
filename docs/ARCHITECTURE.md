@@ -36,7 +36,7 @@ patched iBEC、设置擦除相关 NVRAM 并重启。
 - `IBECResolver`: 用户覆盖目录优先，其次 app bundle；兼容 `Resources/boot/` 和扁平化资源根目录。
 - `LibirecoveryBridge`: 把 libirecovery C API 和错误码封装成 Swift 方法及错误。
 - `ObliterationEngine`: 在后台串行队列执行不可逆擦除流程，并把状态回调到主线程。
-- `MainWindowController`: 管理 USB 监听、设备确认和四个步骤控制器之间的切换。
+- `MainWindowController`: 管理 USB 监听、设备确认、四个步骤控制器切换和右上角关于按钮。
 - `L10n`: 固定加载 `zh-Hans.lproj`，确保应用不随系统语言切回英文。
 - `AppDelegate`: 创建标准应用菜单，持有主窗口和关于窗口控制器。
 - `AboutWindowController`: 展示 bundle 版本、原项目版权、MIT License、GUI 开发者署名和固定 HTTPS 链接。
@@ -117,8 +117,9 @@ IOKit 检测 DFU 设备
   -> 完成或失败页
 ```
 
-应用启动时，`AppDelegate` 同时创建 `EraseA12` 菜单；用户选择“关于 EraseA12”后打开独立信息
-窗口。关于窗口不访问设备，也不调用 `ObliterationEngine`。
+应用启动时，`AppDelegate` 同时创建 `EraseA12` 菜单，并向 `MainWindowController` 注入
+`onShowAbout` 回调。用户可选择菜单或点击主窗口右上角圆形 `!` 打开同一个独立信息窗口。
+关于窗口不访问设备，也不调用 `ObliterationEngine`。
 
 ## 注意事项
 

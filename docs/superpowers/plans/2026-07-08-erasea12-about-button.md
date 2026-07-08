@@ -31,7 +31,7 @@
 - Produces: `MainWindowController.onShowAbout: (() -> Void)?`.
 - Consumes: `AppDelegate.showAboutWindow(_:)`, which already owns and displays the About window.
 
-- [ ] **Step 1: Write failing visibility, placement, and click tests**
+- [x] **Step 1: Write failing visibility, placement, and click tests**
 
 Add these tests to `StepIndicatorViewTests`:
 
@@ -79,7 +79,7 @@ private static func firstSubview<T: NSView>(of type: T.Type, in view: NSView) ->
 }
 ```
 
-- [ ] **Step 2: Run the focused tests and verify red**
+- [x] **Step 2: Run the focused tests and verify red**
 
 ```bash
 xcodebuild test \
@@ -92,7 +92,7 @@ xcodebuild test \
 
 Expected: compilation fails because `MainWindowController` has no `onShowAbout` property.
 
-- [ ] **Step 3: Implement the button and callback**
+- [x] **Step 3: Implement the button and callback**
 
 Add to `MainWindowController`:
 
@@ -142,13 +142,13 @@ controller.onShowAbout = { [weak self] in
 }
 ```
 
-- [ ] **Step 4: Run focused tests and verify green**
+- [x] **Step 4: Run focused tests and verify green**
 
 Run the focused test command from Step 2.
 
 Expected: all `StepIndicatorViewTests` pass, including the two new button tests.
 
-- [ ] **Step 5: Commit the tested UI change**
+- [x] **Step 5: Commit the tested UI change**
 
 ```bash
 git add EraseA12/EraseA12/UI/MainWindowController.swift \
@@ -171,7 +171,7 @@ git commit -m "fix: add visible About button"
 - Consumes: the tested visible About button from Task 1.
 - Produces: a verified root-level `EraseA12.app` and durable project records.
 
-- [ ] **Step 1: Run the complete XCTest suite**
+- [x] **Step 1: Run the complete XCTest suite**
 
 ```bash
 xcodebuild test \
@@ -183,7 +183,7 @@ xcodebuild test \
 
 Expected: the existing 30 tests and 2 new button tests pass.
 
-- [ ] **Step 2: Build and inspect the Release application**
+- [x] **Step 2: Build and inspect the Release application**
 
 ```bash
 xcodebuild clean build \
@@ -200,11 +200,11 @@ git diff --check
 
 Expected: Release build and strict signature pass, the binary is `x86_64 + arm64`, and the known Homebrew OpenSSL dependency remains documented.
 
-- [ ] **Step 3: Update continuity documents**
+- [x] **Step 3: Update continuity documents**
 
 Record the visible top-right button, callback wiring, new total test count, Release hash, actual launch check, unchanged OpenSSL limitation, and the absence of real-device erase testing. Set the design status to implemented and check off every completed plan step.
 
-- [ ] **Step 4: Review and commit documentation**
+- [x] **Step 4: Review and commit documentation**
 
 ```bash
 git diff --check
