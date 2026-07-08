@@ -20,7 +20,8 @@
   `AppIcon.icns` 和 `Assets.car`。
 - 严格签名、`x86_64 + arm64`、11 份 iBEC 和中英文字符串表检查通过。
 - 实际启动 Release 应用并打开关于窗口，新图标显示清楚，现有版权与开发者署名未受影响。
-- Release 可执行文件 SHA-256：`13444f3cb09853bb6a3af821bd511e45e295d3705ce1c1d457bbb1df5673d653`。
+- 合并到 `main` 后重新完成 33 项测试、clean Release 构建、签名、图标元数据和资源检查。
+- 主目录 Release 可执行文件 SHA-256：`52768c1c9c7dc07f75aa855918c1e91f0cc6eaaf513f8b44841c092832b9b2d5`。
 - 未连接或擦除任何真机。
 
 ### 仍存在的限制
