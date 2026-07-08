@@ -103,7 +103,7 @@ final class WaitingStepViewController: NSViewController {
     // MARK: - Pulse Animation
 
     func startPulseAnimation() {
-        guard iconView.layer != nil else {
+        if iconView.layer == nil {
             iconView.wantsLayer = true
         }
 

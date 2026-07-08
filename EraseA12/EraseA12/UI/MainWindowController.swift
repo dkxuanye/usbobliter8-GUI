@@ -152,8 +152,11 @@ final class MainWindowController: NSWindowController {
             indicatorStep = .done
         }
 
-        // Add as child VC
-        addChild(newVC)
+        // Add as child VC using window's contentViewController if available,
+        // otherwise just embed the view directly
+        if let parentVC = window?.contentViewController {
+            parentVC.addChild(newVC)
+        }
 
         // Embed view in container
         newVC.view.translatesAutoresizingMaskIntoConstraints = false

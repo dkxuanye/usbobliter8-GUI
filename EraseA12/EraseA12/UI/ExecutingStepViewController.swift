@@ -45,7 +45,11 @@ final class ExecutingStepViewController: NSViewController {
         // Spinner
         spinner.translatesAutoresizingMaskIntoConstraints = false
         spinner.style = .spinning
-        spinner.controlSize = .large
+        if #available(macOS 11.0, *) {
+            spinner.controlSize = .large
+        } else {
+            spinner.controlSize = .regular
+        }
         view.addSubview(spinner)
 
         // Phase label
