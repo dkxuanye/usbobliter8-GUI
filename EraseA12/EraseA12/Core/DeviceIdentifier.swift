@@ -22,7 +22,7 @@ final class DeviceIdentifier {
 
     // MARK: - Entries
 
-    private var entries: [DeviceEntry] = []
+    private(set) var entries: [DeviceEntry] = []
 
     // MARK: - Load
 
@@ -56,9 +56,11 @@ final class DeviceIdentifier {
         }
 
         // Parse CPID
-        guard let cpid = serialField(serial, key: "CPID") else {
+        guard let rawCPID = serialField(serial, key: "CPID") else {
             return .unparseable
         }
+        // Normalize to "0x" prefixed format for comparison with supported set and plist entries
+        let cpid = rawCPID.hasPrefix("0x") ? rawCPID : "0x\(rawCPID)"
 
         // Check if chip is supported
         guard supportedCPIDs.contains(cpid) else {

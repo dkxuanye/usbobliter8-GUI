@@ -59,7 +59,7 @@ final class IBECResolverTests: XCTestCase {
         let result = resolver.resolve(codename: "d331")
         XCTAssertNotNil(result)
         // Should resolve to user dir, not bundle dir
-        XCTAssertEqual(result?.deletingLastPathComponent(), userDir)
+        XCTAssertEqual(result?.deletingLastPathComponent().path, userDir.path)
     }
 
     // MARK: - Returns nil when not found

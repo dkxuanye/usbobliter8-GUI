@@ -176,7 +176,7 @@ final class LibirecoveryBridge {
     @discardableResult
     func reconnect(initialPause: Int32 = 0) -> Bool {
         guard let c = client else { return false }
-        let newClient = irecv_reconnect(c, Int(initialPause))
+        let newClient = irecv_reconnect(c, initialPause)
         if newClient != nil {
             client = newClient
             return true
@@ -250,7 +250,7 @@ final class LibirecoveryBridge {
 // MARK: - Callback Wrapper
 
 private final class CallbackWrapper {
-    nonisolated(unsafe) static var associatedKey: UInt8 = 0
+    static var associatedKey: UInt8 = 0
     let callback: (LibirecoveryBridge.DeviceEvent) -> Void
     init(callback: @escaping (LibirecoveryBridge.DeviceEvent) -> Void) {
         self.callback = callback

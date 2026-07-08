@@ -33,7 +33,9 @@ targets:
         HEADER_SEARCH_PATHS:
           - "$(PROJECT_DIR)/Vendor/libirecovery/include"
           - "$(PROJECT_DIR)/EraseA12/Bridge"
-        LIBRARY_SEARCH_PATHS: "$(PROJECT_DIR)/Vendor/libirecovery/lib"
+        LIBRARY_SEARCH_PATHS:
+          - "$(PROJECT_DIR)/Vendor/libirecovery/lib"
+          - "/usr/local/lib"
         OTHER_LDFLAGS:
           - "-lirecovery-1.0"
           - "-limobiledevice-glue-1.0"
@@ -65,3 +67,10 @@ targets:
       base:
         PRODUCT_NAME: EraseA12Tests
         MACOSX_DEPLOYMENT_TARGET: "10.15"
+        GENERATE_INFOPLIST_FILE: YES
+        LIBRARY_SEARCH_PATHS:
+          - "$(PROJECT_DIR)/Vendor/libirecovery/lib"
+          - "/usr/local/lib"
+        HEADER_SEARCH_PATHS:
+          - "$(PROJECT_DIR)/Vendor/libirecovery/include"
+          - "$(PROJECT_DIR)/EraseA12/Bridge"

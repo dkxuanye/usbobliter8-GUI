@@ -50,7 +50,7 @@ final class USBDeviceMonitor {
         )
         if matchResult == kIOReturnSuccess {
             // Drain existing matches immediately
-            deviceAppearedCallback(matchedIterator, selfPtr)
+            drainIterator(matchedIterator, appeared: true)
         }
 
         // Terminated notification (device disappeared)
@@ -64,7 +64,7 @@ final class USBDeviceMonitor {
         )
         if termResult == kIOReturnSuccess {
             // Drain existing terminations immediately
-            deviceDisappearedCallback(terminatedIterator, selfPtr)
+            drainIterator(terminatedIterator, appeared: false)
         }
     }
 
@@ -105,6 +105,25 @@ final class USBDeviceMonitor {
         matchingDict[idProduct] = NSNumber(value: dfuProductID)
 
         return matchingDict
+    }
+
+    // MARK: - Drain Iterator
+
+    private func drainIterator(_ iterator: io_iterator_t, appeared: Bool) {
+        var service: io_object_t
+        repeat {
+            service = IOIteratorNext(iterator)
+            if service != 0 {
+                if appeared {
+                    if let serial = readSerialString(from: service) {
+                        scheduleDebouncedAppear(serialString: serial)
+                    }
+                } else {
+                    scheduleDebouncedDisappear()
+                }
+                IOObjectRelease(service)
+            }
+        } while service != 0
     }
 
     // MARK: - Serial String Reading
@@ -164,6 +183,7 @@ final class USBDeviceMonitor {
         guard let refCon = refCon else { return }
         let monitor = Unmanaged<USBDeviceMonitor>.fromOpaque(refCon).takeUnretainedValue()
 
+        var iterator = iterator
         var service: io_object_t
         repeat {
             service = IOIteratorNext(iterator)
@@ -180,6 +200,7 @@ final class USBDeviceMonitor {
         guard let refCon = refCon else { return }
         let monitor = Unmanaged<USBDeviceMonitor>.fromOpaque(refCon).takeUnretainedValue()
 
+        var iterator = iterator
         var service: io_object_t
         repeat {
             service = IOIteratorNext(iterator)
