@@ -8,6 +8,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.mainMenu = makeMainMenu()
 
         let controller = MainWindowController()
+        controller.onShowAbout = { [weak self] in
+            self?.showAboutWindow(nil)
+        }
         controller.show()
         mainWindowController = controller
     }

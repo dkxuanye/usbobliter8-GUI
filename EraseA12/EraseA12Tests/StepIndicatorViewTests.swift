@@ -126,6 +126,39 @@ final class StepIndicatorViewTests: XCTestCase {
         XCTAssertNotNil(appMenu?.items.first { $0.title == "关于 EraseA12" })
     }
 
+    func testMainWindowShowsAboutButtonInTopRightCorner() {
+        let controller = MainWindowController()
+        let contentView = controller.window!.contentView!
+        contentView.layoutSubtreeIfNeeded()
+
+        guard let aboutButton = Self.buttons(in: contentView).first(where: { $0.title == "!" }) else {
+            return XCTFail("主窗口缺少感叹号关于按钮")
+        }
+        guard let stepIndicator = Self.firstSubview(of: StepIndicatorView.self, in: contentView) else {
+            return XCTFail("主窗口缺少步骤指示器")
+        }
+
+        XCTAssertEqual(aboutButton.accessibilityLabel(), "关于 EraseA12")
+        XCTAssertEqual(aboutButton.toolTip, "关于 EraseA12")
+        XCTAssertLessThanOrEqual(contentView.bounds.maxX - aboutButton.frame.maxX, 16)
+        XCTAssertLessThanOrEqual(contentView.bounds.maxY - aboutButton.frame.maxY, 16)
+        XCTAssertFalse(aboutButton.frame.intersects(stepIndicator.frame))
+    }
+
+    func testMainWindowAboutButtonCallsCallbackOnce() {
+        let controller = MainWindowController()
+        var callCount = 0
+        controller.onShowAbout = { callCount += 1 }
+
+        let contentView = controller.window!.contentView!
+        guard let aboutButton = Self.buttons(in: contentView).first(where: { $0.title == "!" }) else {
+            return XCTFail("主窗口缺少感叹号关于按钮")
+        }
+
+        aboutButton.performClick(nil)
+        XCTAssertEqual(callCount, 1)
+    }
+
     func testDefaultHeightKeepsStepTitlesInsideBounds() {
         let view = StepIndicatorView()
         let bounds = CGRect(origin: .zero, size: view.intrinsicContentSize)
@@ -178,5 +211,17 @@ final class StepIndicatorViewTests: XCTestCase {
         }
 
         return ownText + view.subviews.flatMap { displayTexts(in: $0) }
+    }
+
+    private static func buttons(in view: NSView) -> [NSButton] {
+        let ownButton = (view as? NSButton).map { [$0] } ?? []
+        return ownButton + view.subviews.flatMap { buttons(in: $0) }
+    }
+
+    private static func firstSubview<T: NSView>(of type: T.Type, in view: NSView) -> T? {
+        if let match = view as? T {
+            return match
+        }
+        return view.subviews.lazy.compactMap { firstSubview(of: type, in: $0) }.first
     }
 }

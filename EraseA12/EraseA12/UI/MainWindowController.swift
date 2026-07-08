@@ -30,6 +30,7 @@ final class MainWindowController: NSWindowController {
 
     private let glassBackground = GlassBackgroundView()
     private let stepIndicator  = StepIndicatorView()
+    private let aboutButton = NSButton()
     private let containerView = NSView()
 
     // MARK: - State
@@ -37,6 +38,7 @@ final class MainWindowController: NSWindowController {
     private var currentStep: WizardStep = .waiting
     private var currentChildVC: NSViewController?
     private var currentSerialString: String?
+    var onShowAbout: (() -> Void)?
 
     // MARK: - Init
 
@@ -78,6 +80,19 @@ final class MainWindowController: NSWindowController {
         stepIndicator.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(stepIndicator)
 
+        // Always-visible About button
+        let aboutTitle = L10n.text("about.menu_title", fallback: "关于 EraseA12")
+        aboutButton.title = "!"
+        aboutButton.bezelStyle = .circular
+        aboutButton.font = .systemFont(ofSize: 15, weight: .semibold)
+        aboutButton.contentTintColor = .secondaryLabelColor
+        aboutButton.toolTip = aboutTitle
+        aboutButton.setAccessibilityLabel(aboutTitle)
+        aboutButton.target = self
+        aboutButton.action = #selector(showAbout)
+        aboutButton.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(aboutButton)
+
         // Container for step VCs
         containerView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(containerView)
@@ -91,6 +106,11 @@ final class MainWindowController: NSWindowController {
             stepIndicator.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
             stepIndicator.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             stepIndicator.heightAnchor.constraint(equalToConstant: 48),
+
+            aboutButton.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 14),
+            aboutButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            aboutButton.widthAnchor.constraint(equalToConstant: 28),
+            aboutButton.heightAnchor.constraint(equalToConstant: 28),
 
             containerView.topAnchor.constraint(equalTo: stepIndicator.bottomAnchor, constant: 4),
             containerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
@@ -217,6 +237,10 @@ final class MainWindowController: NSWindowController {
     }
 
     // MARK: - Reset
+
+    @objc private func showAbout(_ sender: Any?) {
+        onShowAbout?()
+    }
 
     @objc func resetToWaiting() {
         currentSerialString = nil
