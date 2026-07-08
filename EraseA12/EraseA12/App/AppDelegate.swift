@@ -5,7 +5,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         let controller = MainWindowController()
-        controller.showWindow(self)
+        controller.show()
         mainWindowController = controller
     }
 
