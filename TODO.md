@@ -16,8 +16,8 @@
 - [ ] 配置 Developer ID 签名与 Apple 公证，减少 Gatekeeper 手工操作。
 - [ ] 增加无设备、设备中途断开和恢复模式超时的 UI 自动化覆盖。
 - [ ] 根据真机验证结果补充故障诊断日志，但不在主界面暴露协议细节。
-- [ ] （待用户决策）vendor 体积优化：`.gitignore` 排除 `Vendor/openssl/lib/*.a`，仅保留
-  dylib 和头文件，节省 ~21 MB。
+- [ ] 修 `EraseA12/Makefile` 的 `release`/`dmg` 目标：xcodegen 缺失时 fallback 到
+  已存在的 `EraseA12.xcodeproj`，仿照 `package-dmg.sh` 的兼容逻辑。
 
 ## Done - 已完成
 
@@ -42,3 +42,6 @@
 - [x] 2026-07-08 22:10 自包含 DMG 验证：19M，SHA-256 `3d09e4f7...`，LC_RPATH `@executable_path/../Frameworks`，dylib 严格签名通过。
 - [x] 2026-07-09 09:56 推送 OpenSSL 集成至 `private/main`（commit `e4aa9b8`，154 files,
   +46526/-17），同步更新 `HANDOFF.md` / `DEV_LOG.md` / `TODO.md`。
+- [x] 2026-07-09 11:30 vendor 体积瘦身：`.gitignore` 加 `EraseA12/Vendor/openssl/lib/*.a`，
+  `git rm --cached` 移除 `libssl.a` / `libcrypto.a`（共 ~21 MB），工作树保留；DMG 重新打包
+  验证通过，SHA-256 `e6f5e85d...`。

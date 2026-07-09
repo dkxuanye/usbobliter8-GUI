@@ -7,3 +7,6 @@
 *.dSYM/
 # DMG 是本地分发包，不入库；通过 Scripts/package-dmg.sh 重新生成
 /*.dmg
+# OpenSSL 静态库 .a 是 build-openssl.sh 的副产品，DMG 实际只嵌入 .dylib；不入库节省 ~21 MB。
+# 需要静态链接时重新跑 Scripts/build-openssl.sh 即可重编。
+EraseA12/Vendor/openssl/lib/*.a

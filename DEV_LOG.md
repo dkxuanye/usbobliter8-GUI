@@ -1,5 +1,49 @@
 # DEV_LOG.md - 开发日志
 
+## 2026-07-09 11:30 +0800 - vendor 体积瘦身：移除 OpenSSL .a 静态库
+
+### 用户反馈
+
+> "1"（在"vendor 瘦身"选项）
+
+### 改动
+
+- `.gitignore` 加 `EraseA12/Vendor/openssl/lib/*.a` 规则。
+- `git rm --cached EraseA12/Vendor/openssl/lib/libssl.a libcrypto.a` 从索引移除（工作树保留）。
+- 工作树里的 `libssl.a` (2.9 MB) 和 `libcrypto.a` (17 MB) 仍存在供本地 build 备用，
+  `git status` 不再显示。
+
+### 为什么 .a 是安全的
+
+- `Scripts/bundle-openssl.sh` 只拷贝 `.dylib` 到 `Contents/Frameworks/`，从不动 `.a`。
+- `EraseA12/project.yml` 不引用 `Vendor/openssl/`，OpenSSL 链接走的是
+  `bundle-openssl.sh` 在打包阶段注入的 `@rpath/...dylib`。
+- 源码 grep `libssl|libcrypto` 没有静态引用 `.a`。
+
+### 验证
+
+- `git check-ignore -v libssl.a libcrypto.a` 两文件都命中规则。
+- `SKIP_DMG_FINDER_LAYOUT=1 ./Scripts/package-dmg.sh` 完整跑通：
+  - clean Release 构建成功
+  - ad-hoc 严格签名通过
+  - OpenSSL dylib 嵌入成功，`@rpath/libssl/libcrypto.3.dylib`
+  - DMG 19M、SHA-256 `e6f5e85ddb3ec557c45e693e8fb1c6c9227a6f1d4eaeda7a1da36dcddc21b6e3`
+  - `.background/`、Applications 符号链接、EraseA12.app 全部齐全
+
+### 发现的连带问题
+
+`EraseA12/Makefile` 的 `release` 和 `dmg` 目标硬依赖 `xcodegen generate`，但本机未装
+（之前 Homebrew 安装因 GitHub formula 超时中止）。`Scripts/package-dmg.sh` 本身已兼容
+无 xcodegen + 本地已有 `.xcodeproj` 的 fallback，所以这次直接调脚本完成验证。
+Makefile 的硬依赖应该改为可选：xcodegen 缺失时跳过 generate，直接调 `package-dmg.sh`。
+（已加入 HANDOFF 下一步建议，待用户决策是否现在修。）
+
+### 仍存在的限制
+
+- DMG 仍为 ad-hoc 签名，需要 Developer ID + Apple 公证才能跨机器免 Gatekeeper 警告。
+- 干净克隆下未用 xcodegen 重建 + 跑测试（受本机 xcodegen 缺失阻塞）。
+- 未连接或擦除任何真机。
+
 ## 2026-07-09 09:56 +0800 - 推送 OpenSSL 集成 + 文档同步
 
 ### 用户反馈
