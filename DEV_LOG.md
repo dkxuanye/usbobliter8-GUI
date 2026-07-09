@@ -1,5 +1,41 @@
 # DEV_LOG.md - 开发日志
 
+## 2026-07-09 09:56 +0800 - 推送 OpenSSL 集成 + 文档同步
+
+### 用户反馈
+
+> "更新项目交接文件，提交更改并推送"
+
+### 推送结果
+
+- `e4aa9b8 feat(openssl): 集成 universal OpenSSL 3.6.2，应用自包含可分发` — 154 files, +46526/-17
+- `5b5036c feat: 联网更新检查 + 可视化 DMG 打包`
+- `77b2d99 docs(spec): EraseA12 联网更新检查设计文档`
+
+`private/main` 远端现在包含完整的自包含 OpenSSL 集成链路：
+build → bundle → DMG 嵌入 → 重签名。
+
+### vendor 体积讨论
+
+| 文件 | 大小 | 是否 DMG 必须 |
+|---|---|---|
+| `libcrypto.3.dylib` | 10.4 MB | ✅ 嵌入 Frameworks/ |
+| `libssl.3.dylib` | 2.0 MB | ✅ 嵌入 Frameworks/ |
+| `include/openssl/*.h` | ~1.4 MB | ❌ 仅编译期 |
+| `libcrypto.a` | 17.8 MB | ❌ 备用（不嵌入 DMG） |
+| `libssl.a` | 3.0 MB | ❌ 备用（不嵌入 DMG） |
+| **vendor 总计** | **~34 MB** | |
+
+DMG 实际只用 12.4 MB 的两个 dylib。`.a` 静态库是 `build-openssl.sh` 编译时一起产的
+（跟 `libirecovery.a` 一致进 vendor）。如果嫌 34 MB vendor 太大，可以加
+`.gitignore` 排除 `Vendor/openssl/lib/*.a`，仅保留 dylib + 头文件，待用户决定。
+
+### 仍存在的限制
+
+- DMG 仍为 ad-hoc 签名，需要 Developer ID + Apple 公证才能跨机器免 Gatekeeper 警告。
+- vendor 体积优化决策待用户确认。
+- 未连接或擦除任何真机。
+
 ## 2026-07-08 22:08 +0800 - 集成 OpenSSL dylib，开箱即用
 
 ### 用户反馈
